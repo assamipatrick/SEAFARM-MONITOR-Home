@@ -11,19 +11,31 @@ import type {
     IncidentSeverity
 } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Lazy initialization of GoogleGenAI
+let ai: GoogleGenAI | null = null;
+
+function getAI(): GoogleGenAI {
+    if (!ai) {
+        const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY || '';
+        if (!apiKey) {
+            console.warn('Gemini API Key not configured. AI features will be disabled.');
+        }
+        ai = new GoogleGenAI({ apiKey });
+    }
+    return ai;
+}
 
 // Helper to run prompt with basic text model
 async function runPrompt(prompt: string): Promise<string> {
     try {
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
             model: 'gemini-3-flash-preview',
             contents: prompt,
         });
         return response.text || '';
     } catch (error) {
         console.error("Gemini API Error:", error);
-        return "Error generating content.";
+        return "Error generating content. Please configure your API key.";
     }
 }
 
@@ -211,7 +223,7 @@ export const analyzeIncidentDescription = async (
     `;
 
     try {
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
             model: 'gemini-3-flash-preview',
             contents: prompt,
             config: {
@@ -252,7 +264,7 @@ export const analyzeImageForPest = async (
     try {
         const base64Data = base64Image.split(',')[1] || base64Image;
 
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
             model: 'gemini-2.5-flash-image',
             contents: {
                 parts: [
@@ -375,7 +387,7 @@ export const generateHarvestPrediction = async (
     `;
 
     try {
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
             model: 'gemini-3-pro-preview',
             contents: prompt,
             config: { 
