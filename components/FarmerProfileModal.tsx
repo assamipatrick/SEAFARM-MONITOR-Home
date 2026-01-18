@@ -2,7 +2,7 @@
 import React from 'react';
 import Modal from './ui/Modal';
 import { useLocalization } from '../contexts/LocalizationContext';
-import { useData } from '../../contexts/DataContext';
+import { useData } from '../contexts/DataContext';
 import type { Farmer } from '../types';
 
 interface FarmerProfileModalProps {

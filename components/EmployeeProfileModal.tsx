@@ -3,7 +3,7 @@
 import React from 'react';
 import Modal from './ui/Modal';
 import { useLocalization } from '../contexts/LocalizationContext';
-import { useData } from '../../contexts/DataContext';
+import { useData } from '../contexts/DataContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { formatCurrency } from '../utils/formatters';
 import type { Employee } from '../types';

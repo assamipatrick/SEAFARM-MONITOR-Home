@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useData } from '../../contexts/DataContext';
+import { useData } from '../contexts/DataContext';
 import { useLocalization } from '../contexts/LocalizationContext';
 import Modal from './ui/Modal';
 import Input from './ui/Input';

@@ -4,7 +4,7 @@ import Modal from './ui/Modal';
 import Select from './ui/Select';
 import Button from './ui/Button';
 import { useLocalization } from '../contexts/LocalizationContext';
-import { useData } from '../../contexts/DataContext';
+import { useData } from '../contexts/DataContext';
 import type { Site } from '../types';
 
 interface AssignSiteModalProps {

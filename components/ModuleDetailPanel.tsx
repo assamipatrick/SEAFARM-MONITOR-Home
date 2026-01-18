@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Icon from './ui/Icon';
 import StatusBadge from './ui/StatusBadge';
 import { useLocalization } from '../contexts/LocalizationContext';
-import { useData } from '../../contexts/DataContext';
+import { useData } from '../contexts/DataContext';
 import type { CombinedModuleData } from '../types';
 import Button from './ui/Button';
 import ModuleHistoryModal from './ModuleHistoryModal';

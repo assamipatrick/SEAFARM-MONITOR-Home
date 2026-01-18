@@ -5,7 +5,7 @@ import Input from './ui/Input';
 import Button from './ui/Button';
 import Icon from './ui/Icon';
 import { useLocalization } from '../contexts/LocalizationContext';
-import { useData } from '../../contexts/DataContext';
+import { useData } from '../contexts/DataContext';
 import { useSettings } from '../contexts/SettingsContext';
 import type { SeaweedType, SeaweedPriceHistory } from '../types';
 import { formatCurrency } from '../utils/formatters';

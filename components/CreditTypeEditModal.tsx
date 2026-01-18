@@ -4,7 +4,7 @@ import Modal from './ui/Modal';
 import Input from './ui/Input';
 import Button from './ui/Button';
 import { useLocalization } from '../contexts/LocalizationContext';
-import { useData } from '../../contexts/DataContext';
+import { useData } from '../contexts/DataContext';
 import type { CreditType } from '../types';
 
 interface CreditTypeEditModalProps {
