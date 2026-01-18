@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#3b82f6" />
+    <link rel="apple-touch-icon" href="/icon-192x192.png" />
+    <title>SEAFARM MONITOR - Seaweed Farm ERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <!-- Stripe JS SDK -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+      /* Custom scrollbar for better aesthetics */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0.5);
+        border-radius: 10px;
+        border: 2px solid transparent;
+        background-clip: content-box;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(107, 114, 128, 0.8);
+      }
+      .leaflet-container {
+        background: #a2d3f5; /* A light blue, like a calm sea */
+      }
+      /* Animation for highlighting a row from a notification */
+      @keyframes highlight-pulse {
+        0% { background-color: rgba(59, 130, 246, 0); }
+        50% { background-color: rgba(59, 130, 246, 0.2); }
+        100% { background-color: rgba(59, 130, 246, 0); }
+      }
+      .highlight-row {
+        animation: highlight-pulse 2s ease-in-out;
+      }
+      .highlight-card {
+        animation: highlight-pulse 2s ease-in-out;
+      }
+      .print-page {
+        margin-bottom: 2rem; /* Adds space between pages in screen preview */
+        background: white; /* Make page background white for screen */
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      /* Allow A4 Landscape pages to grow in height to fit content */
+      .report-page-landscape {
+        width: 297mm;
+        min-height: 210mm; /* Use min-height to allow growth */
+        height: auto; /* Allow natural height */
+        padding: 10mm;
+        margin-left: auto;
+        margin-right: auto;
+        background: white;
+        overflow: visible; /* Show all content */
+        box-sizing: border-box;
+      }
+
+      body.generating-pdf .no-print {
+        display: none !important;
+      }
+      
+      /* User Manual Specific Styles */
+      .manual-content ul {
+        list-style-type: disc;
+        padding-left: 20px;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .manual-content li {
+        margin-bottom: 0.5rem;
+      }
+      .manual-content strong {
+        font-weight: 600;
+        color: #3b82f6; /* A highlight color, e.g., blue-500 */
+      }
+      .dark .manual-content strong {
+        color: #60a5fa; /* Lighter blue for dark mode */
+      }
+      
+      @media print {
+        /* Ensure base settings are clean */
+        html, body {
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 100% !important;
+          height: auto !important;
+          overflow: visible !important;
+          background-color: white !important;
+          color: black !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        
+        /* Hide scrollbars and reset containers */
+        #root, main, .overflow-y-auto, .overflow-x-auto {
+            height: auto !important;
+            overflow: visible !important;
+            display: block !important;
+            position: static !important; /* Remove potential relative positioning traps */
+        }
+        
+        /* Page setup */
+        @page {
+          size: auto;
+          margin: 0; /* Let print styles handle margins */
+        }
+        
+        .no-print {
+          display: none !important;
+        }
+
+        /* 
+           STRATEGY: Hide everything by default, then show the printable area.
+           We use visibility because display:none on parents hides children regardless.
+           We position printable area absolute top-left to overlay everything.
+        */
+        body * {
+          visibility: hidden;
+        }
+
+        /* Make specific printable areas visible */
+        #printable-area, #printable-area * {
+          visibility: visible;
+        }
+
+        #printable-qr-label, #printable-qr-label * {
+          visibility: visible;
+        }
+
+        /* Position main printable area absolutely at top-left of the document */
+        #printable-area {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          margin: 0;
+          padding: 0;
+          background: white;
+          z-index: 9999;
+        }
+
+        /* Position QR Label specifically in center */
+        #printable-qr-label {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border: none !important;
+            margin: 0;
+            width: auto;
+            height: auto;
+            z-index: 9999;
+        }
+
+        /* Report Page Styles for Print - Override screen styles */
+        .print-page {
+          width: 100% !important;
+          height: auto !important; /* Allow growth */
+          min-height: 100% !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          background: white !important;
+          box-shadow: none !important;
+          visibility: visible !important;
+          page-break-after: always;
+        }
+        
+        .report-page-landscape {
+          width: 100% !important;
+          min-height: 100% !important;
+          margin: 0 !important;
+          padding: 5mm !important; /* Reduced padding for print */
+          box-shadow: none !important;
+          visibility: visible !important;
+          page-break-after: always;
+        }
+
+        /* Prevent page break after the last page */
+        .print-page:last-child, .report-page-landscape:last-child {
+            page-break-after: auto;
+        }
+        
+        /* Reset text colors for print (ensure black) */
+        p, h1, h2, h3, h4, h5, h6, span, div, td, th {
+            color: black !important;
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.4",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.26.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.86.0",
+    "react-dom": "https://aistudiocdn.com/react-dom@^19.2.1"
+  }
+}
+</script>
+<!-- QR Code Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/recharts/umd/Recharts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+    <script type="module" src="/index.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          // Placeholder for future SW registration
+          // navigator.serviceWorker.register('/sw.js');
+        });
+      }
+    </script>
+  </body>
+</html>
