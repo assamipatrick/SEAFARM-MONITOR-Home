@@ -21,10 +21,10 @@ import { CYCLE_DURATION_DAYS } from '../../constants';
 // Reusable Components
 const PrintPage: FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => {
     const isWide = className.includes('wide-table');
-    const padding = isWide ? 'p-6 print:p-[5mm]' : 'p-8 print:p-[8mm]';
+    const padding = isWide ? 'p-6' : 'p-8';
     
     return (
-        <div className={`report-page-landscape bg-white shadow-lg mx-auto my-8 flex flex-col h-auto min-h-[210mm] overflow-visible print:overflow-visible print:shadow-none print:m-0 print:p-0 ${className}`}>
+        <div className={`report-page-landscape bg-white shadow-lg mx-auto my-8 flex flex-col h-auto min-h-[210mm] overflow-visible     ${className}`}>
             <div className={`flex-grow flex flex-col font-sans text-xs leading-normal text-black ${padding} box-border w-full`}>
                 {children}
             </div>
@@ -37,17 +37,17 @@ const GlobalReportHeader: FC<{ period: string, title?: string }> = ({ period, ti
     const { t } = useLocalization();
     
     return (
-        <header className="flex-shrink-0 text-black relative mb-3 border-b-2 border-gray-800 pb-2 print:mb-2">
-            <div className="absolute top-0 right-0 text-[9px] font-bold text-gray-600 print:text-[8px]">
+        <header className="flex-shrink-0 text-black relative mb-3 border-b-2 border-gray-800 pb-2 
+            <div className="absolute top-0 right-0 text-[9px] font-bold text-gray-600 
                 {period}
             </div>
             <div className="flex items-center gap-3">
                  <div className="flex-shrink-0">
-                    <img src={settings.company.logoUrl} alt="Logo" className="h-10 w-auto object-contain print:h-10" />
+                    <img src={settings.company.logoUrl} alt="Logo" className="h-10 w-auto object-contain  />
                  </div>
                  <div className="flex-grow text-center">
-                    <h1 className="font-bold text-sm uppercase mb-1 tracking-wide print:text-sm">{settings.company.name}</h1>
-                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-2 leading-tight print:text-[8px]">
+                    <h1 className="font-bold text-sm uppercase mb-1 tracking-wide 
+                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-2 leading-tight 
                         <span>{t('company_sarl')} {formatCurrency(settings.company.capital, settings.localization)}</span>
                         <span className="text-gray-400">|</span>
                         <span>NIF: {settings.company.nif}</span>
@@ -56,7 +56,7 @@ const GlobalReportHeader: FC<{ period: string, title?: string }> = ({ period, ti
                         <span className="text-gray-400">|</span>
                         <span>RCS: {settings.company.rc}</span>
                     </div>
-                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-2 leading-tight mt-0.5 print:text-[8px]">
+                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-2 leading-tight mt-0.5 
                         <span>{settings.company.address}</span>
                         <span className="text-gray-400">|</span>
                         <span>{t('phone')}: {settings.company.phone}</span>
@@ -65,14 +65,14 @@ const GlobalReportHeader: FC<{ period: string, title?: string }> = ({ period, ti
                  <div className="w-16"></div> {/* Spacer for balance */}
             </div>
              <div className="text-center mt-2">
-                {title && <h2 className="font-bold text-xs uppercase tracking-wider inline-block pb-0.5 print:text-[11px]">{title}</h2>}
+                {title && <h2 className="font-bold text-xs uppercase tracking-wider inline-block pb-0.5 
             </div>
         </header>
     );
 };
 
 const ReportFooter: FC<{ page: number, totalPages: number }> = ({ page, totalPages }) => (
-    <div className="mt-auto pt-3 text-center text-[8px] text-gray-500 border-t border-gray-300 print:mt-auto print:pt-2 break-before-avoid">
+    <div className="mt-auto pt-3 text-center text-[8px] text-gray-500 border-t border-gray-300   break-before-avoid">
         Page {page} / {totalPages}
     </div>
 );
@@ -82,7 +82,7 @@ const Cell: FC<{ children?: React.ReactNode, className?: string, colSpan?: numbe
         colSpan={colSpan} 
         rowSpan={rowSpan} 
         title={title}
-        className={`px-1.5 py-1 border border-gray-400 text-[8px] text-black align-middle text-${align} print:text-[8px] print:px-[3px] print:py-[2px] ${header ? 'font-bold bg-gray-100 text-gray-900' : ''} ${bold ? 'font-bold' : ''} ${className}`}
+        className={`px-2 py-1 border border-gray-400 text-[9px] text-black align-middle text-${align} ${header ? 'font-bold bg-gray-100 text-gray-900' : ''} ${bold ? 'font-bold' : ''} ${className}`}
     >
         {children || <>&nbsp;</>}
     </td>
@@ -627,9 +627,9 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
     
     // Adaptive configuration based on column count
     const isWideTable = colCount > 7;
-    const firstColWidth = isWideTable ? '10%' : '14%';
-    const fontSize = isWideTable ? 'text-[7px]' : 'text-[8px]';
-    const printFontSize = isWideTable ? 'print:text-[7px]' : 'print:text-[8px]';
+    const firstColWidth = isWideTable ? '12%' : '16%';
+    const fontSize = isWideTable ? 'text-[8px]' : 'text-[9px]';
+    const cellPadding = isWideTable ? 'px-1 py-0.5' : 'px-2 py-1';
 
     return (
         <PrintPage className={isWideTable ? 'wide-table' : ''}>
@@ -637,7 +637,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
             
             <div className="flex flex-col gap-2">
                 <div className="w-full overflow-hidden">
-                    <table className={`w-full border-collapse mb-2 table-fixed ${fontSize} ${printFontSize}`}>
+                    <table className={`w-full border-collapse mb-2 table-fixed ${fontSize}`}>
                          <colgroup>
                             <col style={{ width: firstColWidth }} />
                             {/* Dynamic columns for data */}
@@ -916,7 +916,7 @@ const Page2: FC<any> = ({ period, employees, sites, roles, page, totalPages, mon
              <GlobalReportHeader period={period} title={t('repartition_salaries_site')} />
              <div className="flex flex-col gap-2">
                 <div className="w-full">
-                    <table className="w-full border-collapse text-[9px] table-fixed border border-gray-400 print:text-[9px]">
+                    <table className="w-full border-collapse text-[9px] table-fixed border border-gray-400 
                          <colgroup>
                             <col style={{ width: '20%' }} />
                             <col style={{ width: '8%' }} />
@@ -1020,7 +1020,7 @@ const Page3: FC<any> = ({ period, onSiteData, warehouseData, sites, seaweedTypes
             <div className="flex flex-col gap-6 mt-2">
                 <section>
                     <h3 className="font-bold text-sm uppercase mb-2 text-black border-l-4 border-green-600 pl-2">{t('stocks_sur_sites')} :</h3>
-                    <table className="w-full border-collapse mb-1 text-[9px] table-fixed print:text-[9px]">
+                    <table className="w-full border-collapse mb-1 text-[9px] table-fixed 
                          {colGroups}
                         <thead>
                             <tr>
@@ -1078,7 +1078,7 @@ const Page3: FC<any> = ({ period, onSiteData, warehouseData, sites, seaweedTypes
                 
                 <section>
                      <h3 className="font-bold text-sm uppercase mb-2 text-black border-l-4 border-orange-500 pl-2">{t('stock_magasin_presse')} :</h3>
-                     <table className="w-full border-collapse mb-1 text-[9px] table-fixed print:text-[9px]">
+                     <table className="w-full border-collapse mb-1 text-[9px] table-fixed 
                         {colGroups}
                          <thead>
                             <tr>
@@ -1241,7 +1241,7 @@ const Page4: FC<any> = ({ period, year, exportDocuments, seaweedTypes, page, tot
     const ExportTable: FC<{ title: string, docs: ExportDocument[] }> = ({ title, docs }) => (
         <section className="mb-4 flex-shrink-0">
             <p className="text-xs mb-2 text-black font-bold uppercase border-b border-black inline-block">{title}</p>
-            <table className="w-full border-collapse border border-gray-400 table-fixed text-[9px] print:text-[9px]">
+            <table className="w-full border-collapse border border-gray-400 table-fixed text-[9px] 
                  <colgroup>
                     <col style={{ width: '12%' }} />
                     <col style={{ width: '10%' }} />
@@ -1432,7 +1432,7 @@ const Page6: FC<any> = ({
              <div className="flex-grow flex flex-col gap-4 mt-2 overflow-visible">
                 <section className="flex flex-col">
                     <h3 className="font-bold text-sm uppercase mb-2 text-black flex-shrink-0 border-l-4 border-yellow-500 pl-2">{t('situation_credits')} :</h3>
-                    <table className="w-full border-collapse flex-shrink-0 mb-2 border border-gray-400 table-fixed text-[9px] print:text-[9px]">
+                    <table className="w-full border-collapse flex-shrink-0 mb-2 border border-gray-400 table-fixed text-[9px] 
                         <colgroup>
                              <col style={{ width: '25%' }} />
                              <col style={{ width: '12.5%' }} /> <col style={{ width: '12.5%' }} /> <col style={{ width: '12.5%' }} />
