@@ -20,8 +20,8 @@ import { CYCLE_DURATION_DAYS } from '../../constants';
 
 // Reusable Components
 const PrintPage: FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
-    <div className={`report-page-landscape bg-white shadow-lg mx-auto my-8 flex flex-col h-auto min-h-[210mm] overflow-visible print:overflow-visible print:shadow-none ${className}`}>
-        <div className="flex-grow flex flex-col font-sans text-xs leading-normal text-black p-6 box-border w-full">
+    <div className={`report-page-landscape bg-white shadow-lg mx-auto my-8 flex flex-col h-auto min-h-[210mm] overflow-visible print:overflow-visible print:shadow-none print:m-0 print:p-0 ${className}`}>
+        <div className="flex-grow flex flex-col font-sans text-xs leading-normal text-black p-6 print:p-[10mm] box-border w-full">
             {children}
         </div>
     </div>
@@ -628,7 +628,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
                 <div className="w-full overflow-hidden">
                     <table className="w-full border-collapse mb-2 table-fixed text-[9px] print:text-[9px]">
                          <colgroup>
-                            <col style={{ width: '150px' }} />
+                            <col style={{ width: '15%' }} />
                             {/* Dynamic columns for data */}
                             {Array.from({ length: colCount - 1 }).map((_, i) => <col key={i} />)}
                         </colgroup>
