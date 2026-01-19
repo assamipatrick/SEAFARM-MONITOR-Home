@@ -21,7 +21,7 @@ import { CYCLE_DURATION_DAYS } from '../../constants';
 // Reusable Components
 const PrintPage: FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
     <div className={`report-page-landscape bg-white shadow-lg mx-auto my-8 flex flex-col h-auto min-h-[210mm] overflow-visible print:overflow-visible print:shadow-none print:m-0 print:p-0 ${className}`}>
-        <div className="flex-grow flex flex-col font-sans text-xs leading-normal text-black p-6 print:p-[5mm] box-border w-full">
+        <div className="flex-grow flex flex-col font-sans text-xs leading-normal text-black p-8 print:p-[8mm] box-border w-full">
             {children}
         </div>
     </div>
@@ -32,17 +32,17 @@ const GlobalReportHeader: FC<{ period: string, title?: string }> = ({ period, ti
     const { t } = useLocalization();
     
     return (
-        <header className="flex-shrink-0 text-black relative mb-3 border-b-2 border-gray-800 pb-1 print:mb-2 print:pb-1">
-            <div className="absolute top-0 right-0 text-[8px] font-bold text-gray-600 print:text-[7px]">
+        <header className="flex-shrink-0 text-black relative mb-3 border-b-2 border-gray-800 pb-2 print:mb-2">
+            <div className="absolute top-0 right-0 text-[9px] font-bold text-gray-600 print:text-[8px]">
                 {period}
             </div>
-            <div className="flex items-center gap-3 print:gap-2">
+            <div className="flex items-center gap-3">
                  <div className="flex-shrink-0">
-                    <img src={settings.company.logoUrl} alt="Logo" className="h-10 w-auto object-contain print:h-8" />
+                    <img src={settings.company.logoUrl} alt="Logo" className="h-10 w-auto object-contain print:h-10" />
                  </div>
                  <div className="flex-grow text-center">
-                    <h1 className="font-bold text-sm uppercase mb-1 tracking-wide print:text-xs print:mb-0.5">{settings.company.name}</h1>
-                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-2 leading-tight print:text-[7px] print:gap-x-1">
+                    <h1 className="font-bold text-sm uppercase mb-1 tracking-wide print:text-sm">{settings.company.name}</h1>
+                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-2 leading-tight print:text-[8px]">
                         <span>{t('company_sarl')} {formatCurrency(settings.company.capital, settings.localization)}</span>
                         <span className="text-gray-400">|</span>
                         <span>NIF: {settings.company.nif}</span>
@@ -51,23 +51,23 @@ const GlobalReportHeader: FC<{ period: string, title?: string }> = ({ period, ti
                         <span className="text-gray-400">|</span>
                         <span>RCS: {settings.company.rc}</span>
                     </div>
-                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-2 leading-tight mt-0.5 print:text-[7px] print:gap-x-1">
+                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-2 leading-tight mt-0.5 print:text-[8px]">
                         <span>{settings.company.address}</span>
                         <span className="text-gray-400">|</span>
                         <span>{t('phone')}: {settings.company.phone}</span>
                     </div>
                  </div>
-                 <div className="w-16 print:w-12"></div> {/* Spacer for balance */}
+                 <div className="w-16"></div> {/* Spacer for balance */}
             </div>
-             <div className="text-center mt-2 print:mt-1">
-                {title && <h2 className="font-bold text-xs uppercase tracking-wider inline-block pb-0.5 print:text-[10px]">{title}</h2>}
+             <div className="text-center mt-2">
+                {title && <h2 className="font-bold text-xs uppercase tracking-wider inline-block pb-0.5 print:text-[11px]">{title}</h2>}
             </div>
         </header>
     );
 };
 
 const ReportFooter: FC<{ page: number, totalPages: number }> = ({ page, totalPages }) => (
-    <div className="mt-auto pt-2 text-center text-[8px] text-gray-500 border-t border-gray-300 print:mt-auto print:pt-1 print:text-[7px] break-before-avoid">
+    <div className="mt-auto pt-3 text-center text-[8px] text-gray-500 border-t border-gray-300 print:mt-auto print:pt-2 break-before-avoid">
         Page {page} / {totalPages}
     </div>
 );
@@ -77,7 +77,7 @@ const Cell: FC<{ children?: React.ReactNode, className?: string, colSpan?: numbe
         colSpan={colSpan} 
         rowSpan={rowSpan} 
         title={title}
-        className={`px-1 py-0.5 border border-gray-400 text-[7px] text-black align-middle text-${align} print:text-[7px] print:px-[1px] print:py-[1px] ${header ? 'font-bold bg-gray-100 text-gray-900' : ''} ${bold ? 'font-bold' : ''} ${className}`}
+        className={`px-1.5 py-1 border border-gray-400 text-[8px] text-black align-middle text-${align} print:text-[8px] print:px-[3px] print:py-[2px] ${header ? 'font-bold bg-gray-100 text-gray-900' : ''} ${bold ? 'font-bold' : ''} ${className}`}
     >
         {children || <>&nbsp;</>}
     </td>
@@ -626,9 +626,9 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
             
             <div className="flex flex-col gap-2">
                 <div className="w-full overflow-hidden">
-                    <table className="w-full border-collapse mb-2 table-fixed text-[7px] print:text-[7px]">
+                    <table className="w-full border-collapse mb-2 table-fixed text-[8px] print:text-[8px]">
                          <colgroup>
-                            <col style={{ width: '12%' }} />
+                            <col style={{ width: '14%' }} />
                             {/* Dynamic columns for data */}
                             {Array.from({ length: colCount - 1 }).map((_, i) => <col key={i} />)}
                         </colgroup>

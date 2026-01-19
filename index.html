@@ -57,7 +57,7 @@
         width: 297mm;
         min-height: 210mm; /* Use min-height to allow growth */
         height: auto; /* Allow natural height */
-        padding: 10mm;
+        padding: 8mm;
         margin-left: auto;
         margin-right: auto;
         background: white;
@@ -179,7 +179,7 @@
           width: 100% !important;
           min-height: 100% !important;
           margin: 0 !important;
-          padding: 5mm !important; /* Minimal margins for wide tables */
+          padding: 8mm !important; /* Balanced margins for A4 */
           box-shadow: none !important;
           visibility: visible !important;
           page-break-after: always;
@@ -208,23 +208,23 @@
           line-height: 1.3 !important;
         }
         
-        /* Ultra compact cells for very wide tables */
+        /* Balanced font sizes for readability */
         td:not([colspan]):not([rowspan]) {
-          padding: 1px 2px !important;
-          font-size: 7px !important;
+          padding: 2px 3px !important;
+          font-size: 8px !important;
         }
         
-        /* Compact headers */
+        /* Readable headers */
         th {
           font-weight: 600 !important;
-          font-size: 7px !important;
-          padding: 2px 1px !important;
-        }
-        
-        /* Row headers (with colspan/rowspan) slightly larger */
-        td[colspan], td[rowspan] {
           font-size: 8px !important;
           padding: 2px 3px !important;
+        }
+        
+        /* Row headers slightly larger for emphasis */
+        td[colspan], td[rowspan] {
+          font-size: 9px !important;
+          padding: 3px 4px !important;
         }
         
         /* Force proper table layout and prevent overflow */
@@ -239,13 +239,13 @@
           overflow: hidden !important;
         }
         
-        /* Minimal padding for wide tables */
+        /* Proper padding for balanced layout */
         .report-page-landscape {
           box-sizing: border-box !important;
         }
         
         .report-page-landscape > div {
-          padding: 5mm !important;
+          padding: 8mm !important;
           box-sizing: border-box !important;
         }
       }
