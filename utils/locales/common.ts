@@ -61,6 +61,8 @@ export const commonTranslations = {
   invalidOrExpiredToken: { en: 'Invalid or expired token.', fr: 'Jeton invalide ou expiré.' },
   emailExists: { en: 'Email already exists', fr: 'L\'email existe déjà' },
   unassigned: { en: 'Unassigned', fr: 'Non assigné' },
+  assignedModule: { en: 'Assigned Module', fr: 'Module assigné' },
+  freeModule: { en: 'Free Module', fr: 'Module libre' },
   traceabilityReport: { en: 'Traceability Report', fr: 'Rapport de traçabilité' },
   moduleTraceability: { en: 'Module Traceability', fr: 'Traçabilité du module' },
   batchTraceability: { en: 'Batch Traceability', fr: 'Traçabilité du lot' },
