@@ -46,36 +46,23 @@
       .highlight-card {
         animation: highlight-pulse 2s ease-in-out;
       }
-      /* Screen preview styles for printable pages */
       .print-page {
-        margin-bottom: 2rem;
-        background: white;
+        margin-bottom: 2rem; /* Adds space between pages in screen preview */
+        background: white; /* Make page background white for screen */
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        max-width: 210mm; /* A4 portrait width */
-        margin-left: auto;
-        margin-right: auto;
       }
 
-      /* A4 Portrait pages */
-      .report-page-portrait {
-        width: 210mm;
-        min-height: 297mm;
-        padding: 15mm 20mm;
-        margin: 0 auto 2rem;
-        background: white;
-        box-sizing: border-box;
-        overflow: visible;
-      }
-
-      /* A4 Landscape pages */
+      /* Allow A4 Landscape pages to grow in height to fit content */
       .report-page-landscape {
         width: 297mm;
-        min-height: 210mm;
-        padding: 15mm 20mm;
-        margin: 0 auto 2rem;
+        min-height: 210mm; /* Use min-height to allow growth */
+        height: auto; /* Allow natural height */
+        padding: 10mm;
+        margin-left: auto;
+        margin-right: auto;
         background: white;
+        overflow: visible; /* Show all content */
         box-sizing: border-box;
-        overflow: visible;
       }
 
       body.generating-pdf .no-print {
@@ -101,50 +88,47 @@
       }
       
       @media print {
-        /* Reset everything for clean print */
-        * {
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
-        
+        /* Ensure base settings are clean */
         html, body {
           margin: 0 !important;
           padding: 0 !important;
           width: 100% !important;
-          height: 100% !important;
-          overflow: visible !important;
-          background: white !important;
-          color: black !important;
-        }
-        
-        /* Hide non-printable elements */
-        #root, main, .overflow-y-auto, .overflow-x-auto {
           height: auto !important;
           overflow: visible !important;
-          display: block !important;
-          position: static !important;
+          background-color: white !important;
+          color: black !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
         
-        /* Page configuration */
+        /* Hide scrollbars and reset containers */
+        #root, main, .overflow-y-auto, .overflow-x-auto {
+            height: auto !important;
+            overflow: visible !important;
+            display: block !important;
+            position: static !important; /* Remove potential relative positioning traps */
+        }
+        
+        /* Page setup */
         @page {
-          size: A4;
-          margin: 0;
+          size: auto;
+          margin: 0; /* Let print styles handle margins */
         }
         
-        @page :first {
-          margin-top: 0;
-        }
-        
-        /* Hide non-printable elements */
-        .no-print, button, nav, aside, header:not(.print-header) {
+        .no-print {
           display: none !important;
         }
 
-        /* Show only printable content */
+        /* 
+           STRATEGY: Hide everything by default, then show the printable area.
+           We use visibility because display:none on parents hides children regardless.
+           We position printable area absolute top-left to overlay everything.
+        */
         body * {
           visibility: hidden;
         }
 
+        /* Make specific printable areas visible */
         #printable-area, #printable-area * {
           visibility: visible;
         }
@@ -153,7 +137,7 @@
           visibility: visible;
         }
 
-        /* Position printable area */
+        /* Position main printable area absolutely at top-left of the document */
         #printable-area {
           position: absolute;
           left: 0;
@@ -162,66 +146,53 @@
           margin: 0;
           padding: 0;
           background: white;
+          z-index: 9999;
         }
 
+        /* Position QR Label specifically in center */
         #printable-qr-label {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          border: none !important;
-          margin: 0;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border: none !important;
+            margin: 0;
+            width: auto;
+            height: auto;
+            z-index: 9999;
         }
 
-        /* Professional page styling */
-        .print-page, .report-page-portrait, .report-page-landscape {
+        /* Report Page Styles for Print - Override screen styles */
+        .print-page {
           width: 100% !important;
-          min-height: 100vh !important;
+          height: auto !important; /* Allow growth */
+          min-height: 100% !important;
           margin: 0 !important;
-          padding: 15mm 20mm !important;
+          padding: 0 !important;
           background: white !important;
           box-shadow: none !important;
+          visibility: visible !important;
           page-break-after: always;
-          page-break-inside: avoid;
         }
         
         .report-page-landscape {
-          padding: 15mm 20mm !important;
+          width: 100% !important;
+          min-height: 100% !important;
+          margin: 0 !important;
+          padding: 5mm !important; /* Reduced padding for print */
+          box-shadow: none !important;
+          visibility: visible !important;
+          page-break-after: always;
         }
 
-        /* Prevent page break after last page */
-        .print-page:last-child, 
-        .report-page-portrait:last-child,
-        .report-page-landscape:last-child {
-          page-break-after: auto;
+        /* Prevent page break after the last page */
+        .print-page:last-child, .report-page-landscape:last-child {
+            page-break-after: auto;
         }
         
-        /* Ensure text is black */
-        p, h1, h2, h3, h4, h5, h6, span, div, td, th, li {
-          color: black !important;
-        }
-        
-        /* Table styling for print */
-        table {
-          border-collapse: collapse !important;
-          width: 100% !important;
-        }
-        
-        th, td {
-          border: 1px solid #000 !important;
-          padding: 8px !important;
-        }
-        
-        /* Prevent orphans and widows */
-        p, li {
-          orphans: 3;
-          widows: 3;
-        }
-        
-        /* Keep headers with content */
-        h1, h2, h3, h4, h5, h6 {
-          page-break-after: avoid;
-          page-break-inside: avoid;
+        /* Reset text colors for print (ensure black) */
+        p, h1, h2, h3, h4, h5, h6, span, div, td, th {
+            color: black !important;
         }
       }
     </style>

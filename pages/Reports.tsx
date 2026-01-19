@@ -103,15 +103,14 @@ const Reports: React.FC = () => {
                 const pageElement = targetPages[i] as HTMLElement;
 
                 const canvas = await html2canvas(pageElement, { 
-                    scale: 2.5, // Higher quality for professional output
+                    scale: 3, // Good balance of quality and file size
                     useCORS: true,
                     logging: false,
-                    allowTaint: true,
+                    // Force consistent rendering width regardless of device screen
                     windowWidth: isLandscape ? 1920 : 1200,
-                    windowHeight: pageElement.scrollHeight + 100,
-                    backgroundColor: '#ffffff',
-                    imageTimeout: 15000,
-                    removeContainer: true
+                    // Ensure height captures all content
+                    windowHeight: pageElement.scrollHeight + 50, 
+                    backgroundColor: '#ffffff'
                 });
 
                 const imgData = canvas.toDataURL('image/jpeg', 0.95); // JPEG is smaller than PNG for reports
