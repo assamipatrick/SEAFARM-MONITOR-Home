@@ -227,6 +227,23 @@
           padding: 3px 4px !important;
         }
         
+        /* Adaptive styles for wide tables */
+        .wide-table td:not([colspan]):not([rowspan]) {
+          padding: 1px 2px !important;
+          font-size: 7px !important;
+        }
+        
+        .wide-table th {
+          font-size: 7px !important;
+          padding: 1px 2px !important;
+        }
+        
+        .wide-table td[colspan],
+        .wide-table td[rowspan] {
+          font-size: 8px !important;
+          padding: 2px 3px !important;
+        }
+        
         /* Force proper table layout and prevent overflow */
         table {
           table-layout: fixed !important;
@@ -247,6 +264,11 @@
         .report-page-landscape > div {
           padding: 8mm !important;
           box-sizing: border-box !important;
+        }
+        
+        /* Reduced padding for wide tables */
+        .report-page-landscape.wide-table > div {
+          padding: 5mm !important;
         }
       }
     </style>

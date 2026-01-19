@@ -19,13 +19,18 @@ import type { SeaweedType, ExportDocument, Site, CreditType, FarmerCredit, Repay
 import { CYCLE_DURATION_DAYS } from '../../constants';
 
 // Reusable Components
-const PrintPage: FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
-    <div className={`report-page-landscape bg-white shadow-lg mx-auto my-8 flex flex-col h-auto min-h-[210mm] overflow-visible print:overflow-visible print:shadow-none print:m-0 print:p-0 ${className}`}>
-        <div className="flex-grow flex flex-col font-sans text-xs leading-normal text-black p-8 print:p-[8mm] box-border w-full">
-            {children}
+const PrintPage: FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => {
+    const isWide = className.includes('wide-table');
+    const padding = isWide ? 'p-6 print:p-[5mm]' : 'p-8 print:p-[8mm]';
+    
+    return (
+        <div className={`report-page-landscape bg-white shadow-lg mx-auto my-8 flex flex-col h-auto min-h-[210mm] overflow-visible print:overflow-visible print:shadow-none print:m-0 print:p-0 ${className}`}>
+            <div className={`flex-grow flex flex-col font-sans text-xs leading-normal text-black ${padding} box-border w-full`}>
+                {children}
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 const GlobalReportHeader: FC<{ period: string, title?: string }> = ({ period, title }) => {
     const { settings } = useSettings();
@@ -619,16 +624,22 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
     }
     
     const colCount = 1 + (displaySites.length + 1) * displaySeaweedTypes.length;
+    
+    // Adaptive configuration based on column count
+    const isWideTable = colCount > 7;
+    const firstColWidth = isWideTable ? '10%' : '14%';
+    const fontSize = isWideTable ? 'text-[7px]' : 'text-[8px]';
+    const printFontSize = isWideTable ? 'print:text-[7px]' : 'print:text-[8px]';
 
     return (
-        <PrintPage>
+        <PrintPage className={isWideTable ? 'wide-table' : ''}>
             <GlobalReportHeader period={period} title={t('globalFarmReport')} />
             
             <div className="flex flex-col gap-2">
                 <div className="w-full overflow-hidden">
-                    <table className="w-full border-collapse mb-2 table-fixed text-[8px] print:text-[8px]">
+                    <table className={`w-full border-collapse mb-2 table-fixed ${fontSize} ${printFontSize}`}>
                          <colgroup>
-                            <col style={{ width: '14%' }} />
+                            <col style={{ width: firstColWidth }} />
                             {/* Dynamic columns for data */}
                             {Array.from({ length: colCount - 1 }).map((_, i) => <col key={i} />)}
                         </colgroup>
