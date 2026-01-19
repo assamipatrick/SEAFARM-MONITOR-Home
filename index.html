@@ -179,7 +179,7 @@
           width: 100% !important;
           min-height: 100% !important;
           margin: 0 !important;
-          padding: 12mm 15mm !important; /* Better margins for print */
+          padding: 5mm !important; /* Minimal margins for wide tables */
           box-shadow: none !important;
           visibility: visible !important;
           page-break-after: always;
@@ -208,17 +208,23 @@
           line-height: 1.3 !important;
         }
         
-        /* Compact data cells to fit more columns */
+        /* Ultra compact cells for very wide tables */
         td:not([colspan]):not([rowspan]) {
-          padding: 2px 3px !important;
-          font-size: 8px !important;
+          padding: 1px 2px !important;
+          font-size: 7px !important;
         }
         
-        /* Keep headers readable */
+        /* Compact headers */
         th {
           font-weight: 600 !important;
+          font-size: 7px !important;
+          padding: 2px 1px !important;
+        }
+        
+        /* Row headers (with colspan/rowspan) slightly larger */
+        td[colspan], td[rowspan] {
           font-size: 8px !important;
-          padding: 3px 2px !important;
+          padding: 2px 3px !important;
         }
         
         /* Force proper table layout and prevent overflow */
@@ -233,13 +239,13 @@
           overflow: hidden !important;
         }
         
-        /* Ensure report pages have proper padding */
+        /* Minimal padding for wide tables */
         .report-page-landscape {
           box-sizing: border-box !important;
         }
         
         .report-page-landscape > div {
-          padding: 10mm !important;
+          padding: 5mm !important;
           box-sizing: border-box !important;
         }
       }
