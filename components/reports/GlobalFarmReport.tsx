@@ -19,35 +19,30 @@ import type { SeaweedType, ExportDocument, Site, CreditType, FarmerCredit, Repay
 import { CYCLE_DURATION_DAYS } from '../../constants';
 
 // Reusable Components
-const PrintPage: FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => {
-    const isWide = className.includes('wide-table');
-    const padding = isWide ? 'p-6' : 'p-8';
-    
-    return (
-        <div className={`report-page-landscape bg-white shadow-lg mx-auto my-8 flex flex-col h-auto min-h-[210mm] overflow-visible     ${className}`}>
-            <div className={`flex-grow flex flex-col font-sans text-xs leading-normal text-black ${padding} box-border w-full`}>
-                {children}
-            </div>
+const PrintPage: FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
+    <div className={`report-page-landscape bg-white shadow-lg mx-auto my-8 flex flex-col h-auto min-h-[210mm] overflow-visible ${className}`}>
+        <div className="flex-grow flex flex-col font-sans text-xs leading-normal text-black p-6 box-border w-full">
+            {children}
         </div>
-    );
-};
+    </div>
+);
 
 const GlobalReportHeader: FC<{ period: string, title?: string }> = ({ period, title }) => {
     const { settings } = useSettings();
     const { t } = useLocalization();
     
     return (
-        <header className="flex-shrink-0 text-black relative mb-3 border-b-2 border-gray-800 pb-2 
-            <div className="absolute top-0 right-0 text-[9px] font-bold text-gray-600 
+        <header className="flex-shrink-0 text-black relative mb-4 border-b-2 border-gray-800 pb-2">
+            <div className="absolute top-0 right-0 text-[9px] font-bold text-gray-600">
                 {period}
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
                  <div className="flex-shrink-0">
-                    <img src={settings.company.logoUrl} alt="Logo" className="h-10 w-auto object-contain  />
+                    <img src={settings.company.logoUrl} alt="Logo" className="h-10 w-auto object-contain" />
                  </div>
                  <div className="flex-grow text-center">
-                    <h1 className="font-bold text-sm uppercase mb-1 tracking-wide 
-                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-2 leading-tight 
+                    <h1 className="font-bold text-sm uppercase mb-1 tracking-wide">{settings.company.name}</h1>
+                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-3 leading-tight">
                         <span>{t('company_sarl')} {formatCurrency(settings.company.capital, settings.localization)}</span>
                         <span className="text-gray-400">|</span>
                         <span>NIF: {settings.company.nif}</span>
@@ -56,23 +51,23 @@ const GlobalReportHeader: FC<{ period: string, title?: string }> = ({ period, ti
                         <span className="text-gray-400">|</span>
                         <span>RCS: {settings.company.rc}</span>
                     </div>
-                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-2 leading-tight mt-0.5 
+                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-3 leading-tight mt-0.5">
                         <span>{settings.company.address}</span>
                         <span className="text-gray-400">|</span>
                         <span>{t('phone')}: {settings.company.phone}</span>
                     </div>
                  </div>
-                 <div className="w-16"></div> {/* Spacer for balance */}
+                 <div className="w-20"></div> {/* Spacer for balance */}
             </div>
-             <div className="text-center mt-2">
-                {title && <h2 className="font-bold text-xs uppercase tracking-wider inline-block pb-0.5 
+             <div className="text-center mt-3">
+                {title && <h2 className="font-bold text-sm uppercase tracking-wider inline-block pb-0.5">{title}</h2>}
             </div>
         </header>
     );
 };
 
 const ReportFooter: FC<{ page: number, totalPages: number }> = ({ page, totalPages }) => (
-    <div className="mt-auto pt-3 text-center text-[8px] text-gray-500 border-t border-gray-300   break-before-avoid">
+    <div className="mt-auto pt-4 text-center text-[8px] text-gray-500 border-t border-gray-300 break-before-avoid">
         Page {page} / {totalPages}
     </div>
 );
@@ -624,22 +619,16 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
     }
     
     const colCount = 1 + (displaySites.length + 1) * displaySeaweedTypes.length;
-    
-    // Adaptive configuration based on column count
-    const isWideTable = colCount > 7;
-    const firstColWidth = isWideTable ? '12%' : '16%';
-    const fontSize = isWideTable ? 'text-[8px]' : 'text-[9px]';
-    const cellPadding = isWideTable ? 'px-1 py-0.5' : 'px-2 py-1';
 
     return (
-        <PrintPage className={isWideTable ? 'wide-table' : ''}>
+        <PrintPage>
             <GlobalReportHeader period={period} title={t('globalFarmReport')} />
             
             <div className="flex flex-col gap-2">
                 <div className="w-full overflow-hidden">
-                    <table className={`w-full border-collapse mb-2 table-fixed ${fontSize}`}>
+                    <table className="w-full border-collapse mb-2 table-fixed text-[8px]">
                          <colgroup>
-                            <col style={{ width: firstColWidth }} />
+                            <col style={{ width: '150px' }} />
                             {/* Dynamic columns for data */}
                             {Array.from({ length: colCount - 1 }).map((_, i) => <col key={i} />)}
                         </colgroup>
@@ -677,7 +666,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
 
                             {/* Line Age */}
                              <tr>
-                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[9px] tracking-wider border-t border-gray-300 font-bold">{t('tranche_age_lignes')}</Cell>
+                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[8px] tracking-wider border-t border-gray-300 font-bold">{t('tranche_age_lignes')}</Cell>
                             </tr>
                             {['0-10', '11-20', '21-30', '30-40', '40-50', '>50'].map((range, index) => (
                                 <tr key={range}>
@@ -693,7 +682,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
 
                             {/* Line Summary */}
                             <tr>
-                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[9px] tracking-wider border-t border-gray-300 font-bold">{t('bilan_lignes')}</Cell>
+                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[8px] tracking-wider border-t border-gray-300 font-bold">{t('bilan_lignes')}</Cell>
                             </tr>
                             <tr>
                                 <Cell align="left" className="pl-4 font-bold text-blue-900 border-r border-gray-300">{t('total_lignes_eau')}</Cell>
@@ -747,7 +736,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
                             
                             {/* Forecast */}
                              <tr>
-                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[9px] tracking-wider border-t border-gray-300 font-bold">{t('prevision_production')}</Cell>
+                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[8px] tracking-wider border-t border-gray-300 font-bold">{t('prevision_production')}</Cell>
                             </tr>
                             {['m1', 'm2', 'm3'].map((mKey, i) => (
                                 <tr key={mKey}>
@@ -770,7 +759,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
                             
                             {/* Incidents */}
                              <tr>
-                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-200 uppercase text-[9px] tracking-wider font-bold">{t('incidentsLabel')}</Cell>
+                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-200 uppercase text-[8px] tracking-wider font-bold">{t('incidentsLabel')}</Cell>
                             </tr>
                             {incidentTypes.length > 0 ? incidentTypes.map((inc: string, index: number) => (
                                 <tr key={inc}>
@@ -786,7 +775,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
                             
                             {/* Wind */}
                              <tr>
-                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[9px] tracking-wider border-t border-gray-300 font-bold">{t('vent')}</Cell>
+                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[8px] tracking-wider border-t border-gray-300 font-bold">{t('vent')}</Cell>
                             </tr>
                             <tr>
                                 <Cell align="left" className="pl-4 text-gray-600 border-r border-gray-300">{t('vitesse_kmh')}</Cell>
@@ -815,7 +804,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
                             
                             {/* Other Parameters */}
                             <tr>
-                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[9px] tracking-wider border-t border-gray-300 font-bold">{t('autres_parametres')}</Cell>
+                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[8px] tracking-wider border-t border-gray-300 font-bold">{t('autres_parametres')}</Cell>
                             </tr>
                             {[
                                 { label: 'temperature_c', key: 'temp' },
@@ -916,7 +905,7 @@ const Page2: FC<any> = ({ period, employees, sites, roles, page, totalPages, mon
              <GlobalReportHeader period={period} title={t('repartition_salaries_site')} />
              <div className="flex flex-col gap-2">
                 <div className="w-full">
-                    <table className="w-full border-collapse text-[9px] table-fixed border border-gray-400 
+                    <table className="w-full border-collapse text-[8px] table-fixed border border-gray-400">
                          <colgroup>
                             <col style={{ width: '20%' }} />
                             <col style={{ width: '8%' }} />
@@ -1020,7 +1009,7 @@ const Page3: FC<any> = ({ period, onSiteData, warehouseData, sites, seaweedTypes
             <div className="flex flex-col gap-6 mt-2">
                 <section>
                     <h3 className="font-bold text-sm uppercase mb-2 text-black border-l-4 border-green-600 pl-2">{t('stocks_sur_sites')} :</h3>
-                    <table className="w-full border-collapse mb-1 text-[9px] table-fixed 
+                    <table className="w-full border-collapse mb-1 text-[8px] table-fixed">
                          {colGroups}
                         <thead>
                             <tr>
@@ -1078,7 +1067,7 @@ const Page3: FC<any> = ({ period, onSiteData, warehouseData, sites, seaweedTypes
                 
                 <section>
                      <h3 className="font-bold text-sm uppercase mb-2 text-black border-l-4 border-orange-500 pl-2">{t('stock_magasin_presse')} :</h3>
-                     <table className="w-full border-collapse mb-1 text-[9px] table-fixed 
+                     <table className="w-full border-collapse mb-1 text-[8px] table-fixed">
                         {colGroups}
                          <thead>
                             <tr>
@@ -1241,7 +1230,7 @@ const Page4: FC<any> = ({ period, year, exportDocuments, seaweedTypes, page, tot
     const ExportTable: FC<{ title: string, docs: ExportDocument[] }> = ({ title, docs }) => (
         <section className="mb-4 flex-shrink-0">
             <p className="text-xs mb-2 text-black font-bold uppercase border-b border-black inline-block">{title}</p>
-            <table className="w-full border-collapse border border-gray-400 table-fixed text-[9px] 
+            <table className="w-full border-collapse border border-gray-400 table-fixed text-[8px]">
                  <colgroup>
                     <col style={{ width: '12%' }} />
                     <col style={{ width: '10%' }} />
@@ -1311,8 +1300,8 @@ const Page5: FC<any> = ({ period, months, monthlyData, year, sites, seaweedTypes
                         <tr>
                              {months.map((_, i) => (
                                 <React.Fragment key={`sub-h-${i}`}>
-                                    <Cell header className="text-[5px] border-gray-400 bg-gray-50 px-0 border-r">%</Cell>
-                                    <Cell header className="text-[5px] border-gray-400 bg-gray-50 px-0">Kg</Cell>
+                                    <Cell header className="text-[8px] border-gray-400 bg-gray-50 px-0 border-r">%</Cell>
+                                    <Cell header className="text-[8px] border-gray-400 bg-gray-50 px-0">Kg</Cell>
                                 </React.Fragment>
                             ))}
                         </tr>
@@ -1432,7 +1421,7 @@ const Page6: FC<any> = ({
              <div className="flex-grow flex flex-col gap-4 mt-2 overflow-visible">
                 <section className="flex flex-col">
                     <h3 className="font-bold text-sm uppercase mb-2 text-black flex-shrink-0 border-l-4 border-yellow-500 pl-2">{t('situation_credits')} :</h3>
-                    <table className="w-full border-collapse flex-shrink-0 mb-2 border border-gray-400 table-fixed text-[9px] 
+                    <table className="w-full border-collapse flex-shrink-0 mb-2 border border-gray-400 table-fixed text-[8px]">
                         <colgroup>
                              <col style={{ width: '25%' }} />
                              <col style={{ width: '12.5%' }} /> <col style={{ width: '12.5%' }} /> <col style={{ width: '12.5%' }} />
@@ -1492,7 +1481,7 @@ const Page6: FC<any> = ({
                             {individualStatsColGroup}
                             <thead className="sticky top-0 z-10">
                                 <tr>
-                                    <Cell rowSpan={2} header className="bg-gray-200 align-middle text-[9px] border-b-2 border-gray-500">{t('farmer')}</Cell>
+                                    <Cell rowSpan={2} header className="bg-gray-200 align-middle text-[8px] border-b-2 border-gray-500">{t('farmer')}</Cell>
                                     {monthHeaders.map((m, i) => (
                                         <Cell key={i} colSpan={3} header className="bg-gray-100 border-b border-gray-400 font-bold">{m}</Cell>
                                     ))}
@@ -1514,7 +1503,7 @@ const Page6: FC<any> = ({
                              <tbody>
                                  {groupedData.map((siteData: any) => (
                                     <React.Fragment key={siteData.siteName}>
-                                        <tr><Cell colSpan={1 + monthHeaders.length * 3} header align="left" className="bg-blue-100 py-1 text-[9px] uppercase tracking-widest border-t-2 border-gray-500 font-bold pl-2">{siteData.siteName}</Cell></tr>
+                                        <tr><Cell colSpan={1 + monthHeaders.length * 3} header align="left" className="bg-blue-100 py-1 text-[8px] uppercase tracking-widest border-t-2 border-gray-500 font-bold pl-2">{siteData.siteName}</Cell></tr>
                                         {siteData.seaweedTypes.map((typeData: any) => (
                                             <React.Fragment key={typeData.typeName}>
                                                 <tr><Cell colSpan={1 + monthHeaders.length * 3} header align="left" className="bg-green-50 py-0.5 pl-4 text-[8px] text-green-800 italic border-t border-gray-300 font-medium">{typeData.typeName}</Cell></tr>
