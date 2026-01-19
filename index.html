@@ -179,7 +179,7 @@
           width: 100% !important;
           min-height: 100% !important;
           margin: 0 !important;
-          padding: 5mm !important; /* Reduced padding for print */
+          padding: 12mm 15mm !important; /* Better margins for print */
           box-shadow: none !important;
           visibility: visible !important;
           page-break-after: always;
@@ -193,6 +193,23 @@
         /* Reset text colors for print (ensure black) */
         p, h1, h2, h3, h4, h5, h6, span, div, td, th {
             color: black !important;
+        }
+        
+        /* Table printing improvements */
+        table {
+          border-collapse: collapse !important;
+          width: 100% !important;
+        }
+        
+        td, th {
+          padding: 3px 4px !important; /* Better cell padding */
+          border: 1px solid #666 !important;
+          font-size: 9px !important; /* Slightly larger font */
+          line-height: 1.3 !important;
+        }
+        
+        th {
+          font-weight: 600 !important;
         }
       }
     </style>

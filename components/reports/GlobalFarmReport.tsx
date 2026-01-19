@@ -33,16 +33,16 @@ const GlobalReportHeader: FC<{ period: string, title?: string }> = ({ period, ti
     
     return (
         <header className="flex-shrink-0 text-black relative mb-4 border-b-2 border-gray-800 pb-2">
-            <div className="absolute top-0 right-0 text-[9px] font-bold text-gray-600">
+            <div className="absolute top-0 right-0 text-[10px] font-bold text-gray-600">
                 {period}
             </div>
             <div className="flex items-center gap-4">
                  <div className="flex-shrink-0">
-                    <img src={settings.company.logoUrl} alt="Logo" className="h-10 w-auto object-contain" />
+                    <img src={settings.company.logoUrl} alt="Logo" className="h-12 w-auto object-contain" />
                  </div>
                  <div className="flex-grow text-center">
-                    <h1 className="font-bold text-sm uppercase mb-1 tracking-wide">{settings.company.name}</h1>
-                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-3 leading-tight">
+                    <h1 className="font-bold text-base uppercase mb-1 tracking-wide">{settings.company.name}</h1>
+                    <div className="text-[9px] text-gray-600 flex flex-wrap justify-center gap-x-3 leading-tight">
                         <span>{t('company_sarl')} {formatCurrency(settings.company.capital, settings.localization)}</span>
                         <span className="text-gray-400">|</span>
                         <span>NIF: {settings.company.nif}</span>
@@ -51,7 +51,7 @@ const GlobalReportHeader: FC<{ period: string, title?: string }> = ({ period, ti
                         <span className="text-gray-400">|</span>
                         <span>RCS: {settings.company.rc}</span>
                     </div>
-                    <div className="text-[8px] text-gray-600 flex flex-wrap justify-center gap-x-3 leading-tight mt-0.5">
+                    <div className="text-[9px] text-gray-600 flex flex-wrap justify-center gap-x-3 leading-tight mt-0.5">
                         <span>{settings.company.address}</span>
                         <span className="text-gray-400">|</span>
                         <span>{t('phone')}: {settings.company.phone}</span>
@@ -67,7 +67,7 @@ const GlobalReportHeader: FC<{ period: string, title?: string }> = ({ period, ti
 };
 
 const ReportFooter: FC<{ page: number, totalPages: number }> = ({ page, totalPages }) => (
-    <div className="mt-auto pt-4 text-center text-[8px] text-gray-500 border-t border-gray-300 print:mt-auto break-before-avoid">
+    <div className="mt-auto pt-4 text-center text-[9px] text-gray-500 border-t border-gray-300 print:mt-auto break-before-avoid">
         Page {page} / {totalPages}
     </div>
 );
@@ -77,7 +77,7 @@ const Cell: FC<{ children?: React.ReactNode, className?: string, colSpan?: numbe
         colSpan={colSpan} 
         rowSpan={rowSpan} 
         title={title}
-        className={`px-1 py-0.5 border border-gray-400 text-[8px] text-black align-middle text-${align} ${header ? 'font-bold bg-gray-100 text-gray-900' : ''} ${bold ? 'font-bold' : ''} ${className}`}
+        className={`px-2 py-1 border border-gray-400 text-[9px] text-black align-middle text-${align} print:text-[9px] ${header ? 'font-bold bg-gray-100 text-gray-900' : ''} ${bold ? 'font-bold' : ''} ${className}`}
     >
         {children || <>&nbsp;</>}
     </td>
@@ -626,7 +626,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
             
             <div className="flex flex-col gap-2">
                 <div className="w-full overflow-hidden">
-                    <table className="w-full border-collapse mb-2 table-fixed text-[8px]">
+                    <table className="w-full border-collapse mb-2 table-fixed text-[9px] print:text-[9px]">
                          <colgroup>
                             <col style={{ width: '150px' }} />
                             {/* Dynamic columns for data */}
@@ -666,7 +666,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
 
                             {/* Line Age */}
                              <tr>
-                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[8px] tracking-wider border-t border-gray-300 font-bold">{t('tranche_age_lignes')}</Cell>
+                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[9px] tracking-wider border-t border-gray-300 font-bold">{t('tranche_age_lignes')}</Cell>
                             </tr>
                             {['0-10', '11-20', '21-30', '30-40', '40-50', '>50'].map((range, index) => (
                                 <tr key={range}>
@@ -682,7 +682,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
 
                             {/* Line Summary */}
                             <tr>
-                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[8px] tracking-wider border-t border-gray-300 font-bold">{t('bilan_lignes')}</Cell>
+                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[9px] tracking-wider border-t border-gray-300 font-bold">{t('bilan_lignes')}</Cell>
                             </tr>
                             <tr>
                                 <Cell align="left" className="pl-4 font-bold text-blue-900 border-r border-gray-300">{t('total_lignes_eau')}</Cell>
@@ -736,7 +736,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
                             
                             {/* Forecast */}
                              <tr>
-                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[8px] tracking-wider border-t border-gray-300 font-bold">{t('prevision_production')}</Cell>
+                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[9px] tracking-wider border-t border-gray-300 font-bold">{t('prevision_production')}</Cell>
                             </tr>
                             {['m1', 'm2', 'm3'].map((mKey, i) => (
                                 <tr key={mKey}>
@@ -759,7 +759,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
                             
                             {/* Incidents */}
                              <tr>
-                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-200 uppercase text-[8px] tracking-wider font-bold">{t('incidentsLabel')}</Cell>
+                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-200 uppercase text-[9px] tracking-wider font-bold">{t('incidentsLabel')}</Cell>
                             </tr>
                             {incidentTypes.length > 0 ? incidentTypes.map((inc: string, index: number) => (
                                 <tr key={inc}>
@@ -775,7 +775,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
                             
                             {/* Wind */}
                              <tr>
-                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[8px] tracking-wider border-t border-gray-300 font-bold">{t('vent')}</Cell>
+                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[9px] tracking-wider border-t border-gray-300 font-bold">{t('vent')}</Cell>
                             </tr>
                             <tr>
                                 <Cell align="left" className="pl-4 text-gray-600 border-r border-gray-300">{t('vitesse_kmh')}</Cell>
@@ -804,7 +804,7 @@ const CombinedOverviewPage: FC<any> = ({ period, pivotData, displaySites, displa
                             
                             {/* Other Parameters */}
                             <tr>
-                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[8px] tracking-wider border-t border-gray-300 font-bold">{t('autres_parametres')}</Cell>
+                                <Cell colSpan={colCount} header align="left" className="pl-2 bg-gray-100 uppercase text-[9px] tracking-wider border-t border-gray-300 font-bold">{t('autres_parametres')}</Cell>
                             </tr>
                             {[
                                 { label: 'temperature_c', key: 'temp' },
@@ -905,7 +905,7 @@ const Page2: FC<any> = ({ period, employees, sites, roles, page, totalPages, mon
              <GlobalReportHeader period={period} title={t('repartition_salaries_site')} />
              <div className="flex flex-col gap-2">
                 <div className="w-full">
-                    <table className="w-full border-collapse text-[7px] table-fixed border border-gray-400">
+                    <table className="w-full border-collapse text-[9px] table-fixed border border-gray-400 print:text-[9px]">
                          <colgroup>
                             <col style={{ width: '20%' }} />
                             <col style={{ width: '8%' }} />
@@ -1009,7 +1009,7 @@ const Page3: FC<any> = ({ period, onSiteData, warehouseData, sites, seaweedTypes
             <div className="flex flex-col gap-6 mt-2">
                 <section>
                     <h3 className="font-bold text-sm uppercase mb-2 text-black border-l-4 border-green-600 pl-2">{t('stocks_sur_sites')} :</h3>
-                    <table className="w-full border-collapse mb-1 text-[8px] table-fixed">
+                    <table className="w-full border-collapse mb-1 text-[9px] table-fixed print:text-[9px]">
                          {colGroups}
                         <thead>
                             <tr>
@@ -1067,7 +1067,7 @@ const Page3: FC<any> = ({ period, onSiteData, warehouseData, sites, seaweedTypes
                 
                 <section>
                      <h3 className="font-bold text-sm uppercase mb-2 text-black border-l-4 border-orange-500 pl-2">{t('stock_magasin_presse')} :</h3>
-                     <table className="w-full border-collapse mb-1 text-[8px] table-fixed">
+                     <table className="w-full border-collapse mb-1 text-[9px] table-fixed print:text-[9px]">
                         {colGroups}
                          <thead>
                             <tr>
@@ -1230,7 +1230,7 @@ const Page4: FC<any> = ({ period, year, exportDocuments, seaweedTypes, page, tot
     const ExportTable: FC<{ title: string, docs: ExportDocument[] }> = ({ title, docs }) => (
         <section className="mb-4 flex-shrink-0">
             <p className="text-xs mb-2 text-black font-bold uppercase border-b border-black inline-block">{title}</p>
-            <table className="w-full border-collapse border border-gray-400 table-fixed text-[8px]">
+            <table className="w-full border-collapse border border-gray-400 table-fixed text-[9px] print:text-[9px]">
                  <colgroup>
                     <col style={{ width: '12%' }} />
                     <col style={{ width: '10%' }} />
@@ -1280,7 +1280,7 @@ const Page5: FC<any> = ({ period, months, monthlyData, year, sites, seaweedTypes
         <PrintPage>
             <GlobalReportHeader period={period} title={t('production_mensuelle_par_site')} />
             <div className="flex-grow flex flex-col gap-2 mt-2 overflow-visible">
-                 <table className="w-full border-collapse text-[6px] flex-shrink-0 table-fixed border border-gray-400">
+                 <table className="w-full border-collapse text-[8px] flex-shrink-0 table-fixed border border-gray-400">
                      <colgroup>
                          <col style={{ width: '14%' }} />
                          {months.map((_, i) => (
@@ -1294,7 +1294,7 @@ const Page5: FC<any> = ({ period, months, monthlyData, year, sites, seaweedTypes
                         <tr>
                             <Cell rowSpan={2} className="bg-gray-200 border-gray-400"></Cell>
                             {months.map((m, i) => (
-                                <Cell key={i} colSpan={2} header className="bg-blue-100 border-gray-400 border-b text-blue-900 uppercase font-bold text-[7px]">{m}</Cell>
+                                <Cell key={i} colSpan={2} header className="bg-blue-100 border-gray-400 border-b text-blue-900 uppercase font-bold text-[8px]">{m}</Cell>
                             ))}
                         </tr>
                         <tr>
@@ -1325,8 +1325,8 @@ const Page5: FC<any> = ({ period, months, monthlyData, year, sites, seaweedTypes
                                                 // Production is NET weight (already calculated in parent component)
                                                 return (
                                                     <React.Fragment key={i}>
-                                                        <Cell className="border-r border-gray-200 text-[6px] text-center">{growthRate > 0 ? `${growthRate.toFixed(1)}` : '-'}</Cell>
-                                                        <Cell className="border-r border-gray-300 text-[6px] text-center bg-gray-50 font-medium">{data && data.production > 0 ? formatNumber(data.production, {...settings.localization, nonMonetaryDecimals: 0}) : '-'}</Cell>
+                                                        <Cell className="border-r border-gray-200 text-[8px] text-center">{growthRate > 0 ? `${growthRate.toFixed(1)}` : '-'}</Cell>
+                                                        <Cell className="border-r border-gray-300 text-[8px] text-center bg-gray-50 font-medium">{data && data.production > 0 ? formatNumber(data.production, {...settings.localization, nonMonetaryDecimals: 0}) : '-'}</Cell>
                                                     </React.Fragment>
                                                 )
                                             })}
@@ -1421,7 +1421,7 @@ const Page6: FC<any> = ({
              <div className="flex-grow flex flex-col gap-4 mt-2 overflow-visible">
                 <section className="flex flex-col">
                     <h3 className="font-bold text-sm uppercase mb-2 text-black flex-shrink-0 border-l-4 border-yellow-500 pl-2">{t('situation_credits')} :</h3>
-                    <table className="w-full border-collapse flex-shrink-0 mb-2 border border-gray-400 table-fixed text-[8px]">
+                    <table className="w-full border-collapse flex-shrink-0 mb-2 border border-gray-400 table-fixed text-[9px] print:text-[9px]">
                         <colgroup>
                              <col style={{ width: '25%' }} />
                              <col style={{ width: '12.5%' }} /> <col style={{ width: '12.5%' }} /> <col style={{ width: '12.5%' }} />
@@ -1434,12 +1434,12 @@ const Page6: FC<any> = ({
                                 <Cell colSpan={3} header className="bg-blue-100 text-blue-900 uppercase font-bold border-gray-400 border-b border-l-2 border-l-blue-300 text-center">{period}</Cell>
                             </tr>
                             <tr>
-                                <Cell header className="text-[7px] bg-gray-50 border-gray-300">{t('effectif_fermiers_concernes')}</Cell>
-                                <Cell header className="text-[7px] bg-gray-50 border-gray-300">{t('solde_credits')}</Cell>
-                                <Cell header className="text-[7px] bg-gray-50 border-gray-300">{t('total_remboursements')}</Cell>
-                                <Cell header className="bg-blue-50 text-[7px] border-l-2 border-l-blue-300">{t('effectif_fermiers_concernes')}</Cell>
-                                <Cell header className="bg-blue-50 text-[7px]">{t('solde_credits')}</Cell>
-                                <Cell header className="bg-blue-50 text-[7px]">{t('total_remboursements')}</Cell>
+                                <Cell header className="text-[8px] bg-gray-50 border-gray-300">{t('effectif_fermiers_concernes')}</Cell>
+                                <Cell header className="text-[8px] bg-gray-50 border-gray-300">{t('solde_credits')}</Cell>
+                                <Cell header className="text-[8px] bg-gray-50 border-gray-300">{t('total_remboursements')}</Cell>
+                                <Cell header className="bg-blue-50 text-[8px] border-l-2 border-l-blue-300">{t('effectif_fermiers_concernes')}</Cell>
+                                <Cell header className="bg-blue-50 text-[8px]">{t('solde_credits')}</Cell>
+                                <Cell header className="bg-blue-50 text-[8px]">{t('total_remboursements')}</Cell>
                             </tr>
                         </thead>
                         <tbody>
@@ -1477,11 +1477,11 @@ const Page6: FC<any> = ({
                 <section className="flex flex-col mt-4">
                      <h3 className="font-bold text-sm uppercase mb-2 text-black flex-shrink-0 border-l-4 border-indigo-500 pl-2">{t('statistique_individuelle_fermiers')}</h3>
                      <div className="border border-gray-400 overflow-hidden">
-                        <table className="w-full border-collapse text-[6px] table-fixed">
+                        <table className="w-full border-collapse text-[8px] table-fixed">
                             {individualStatsColGroup}
                             <thead className="sticky top-0 z-10">
                                 <tr>
-                                    <Cell rowSpan={2} header className="bg-gray-200 align-middle text-[8px] border-b-2 border-gray-500">{t('farmer')}</Cell>
+                                    <Cell rowSpan={2} header className="bg-gray-200 align-middle text-[9px] border-b-2 border-gray-500">{t('farmer')}</Cell>
                                     {monthHeaders.map((m, i) => (
                                         <Cell key={i} colSpan={3} header className="bg-gray-100 border-b border-gray-400 font-bold">{m}</Cell>
                                     ))}
@@ -1489,13 +1489,13 @@ const Page6: FC<any> = ({
                                 <tr>
                                     {monthHeaders.map((m, i) => (
                                         <React.Fragment key={`sub-h-${i}`}>
-                                            <Cell header className="text-[6px] p-0 border-r border-gray-300 bg-white font-normal" title={t('status_PLANTED')}>
+                                            <Cell header className="text-[8px] p-0 border-r border-gray-300 bg-white font-normal" title={t('status_PLANTED')}>
                                                 {t('status_PLANTED').charAt(0)}
                                             </Cell>
-                                            <Cell header className="text-[6px] p-0 border-r border-gray-300 bg-white font-normal" title={t('status_HARVESTED')}>
+                                            <Cell header className="text-[8px] p-0 border-r border-gray-300 bg-white font-normal" title={t('status_HARVESTED')}>
                                                 {t('status_HARVESTED').charAt(0)}
                                             </Cell>
-                                            <Cell header className="text-[6px] p-0 border-r border-gray-400 bg-white font-normal">Kg</Cell>
+                                            <Cell header className="text-[8px] p-0 border-r border-gray-400 bg-white font-normal">Kg</Cell>
                                         </React.Fragment>
                                     ))}
                                 </tr>
@@ -1503,10 +1503,10 @@ const Page6: FC<any> = ({
                              <tbody>
                                  {groupedData.map((siteData: any) => (
                                     <React.Fragment key={siteData.siteName}>
-                                        <tr><Cell colSpan={1 + monthHeaders.length * 3} header align="left" className="bg-blue-100 py-1 text-[8px] uppercase tracking-widest border-t-2 border-gray-500 font-bold pl-2">{siteData.siteName}</Cell></tr>
+                                        <tr><Cell colSpan={1 + monthHeaders.length * 3} header align="left" className="bg-blue-100 py-1 text-[9px] uppercase tracking-widest border-t-2 border-gray-500 font-bold pl-2">{siteData.siteName}</Cell></tr>
                                         {siteData.seaweedTypes.map((typeData: any) => (
                                             <React.Fragment key={typeData.typeName}>
-                                                <tr><Cell colSpan={1 + monthHeaders.length * 3} header align="left" className="bg-green-50 py-0.5 pl-4 text-[7px] text-green-800 italic border-t border-gray-300 font-medium">{typeData.typeName}</Cell></tr>
+                                                <tr><Cell colSpan={1 + monthHeaders.length * 3} header align="left" className="bg-green-50 py-0.5 pl-4 text-[8px] text-green-800 italic border-t border-gray-300 font-medium">{typeData.typeName}</Cell></tr>
                                                 {typeData.farmers.map((f: any) => (
                                                     <tr key={f.id} className="border-b border-gray-300">
                                                         <Cell align="left" className="align-middle truncate px-1 border-r border-gray-300 bg-white font-normal" title={f.name}>{f.name}</Cell>
