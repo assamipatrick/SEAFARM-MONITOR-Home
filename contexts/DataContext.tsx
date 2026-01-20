@@ -1174,11 +1174,31 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     });
     
+    // Ajouter l'opération
     setCuttingOperations(prev => [...prev, newOperation]);
+    
+    // Ajouter les crédits
     if (newCredits.length > 0) {
         const fullNewCredits = newCredits.map(c => ({...c, id: `fc-${Date.now()}-${Math.random()}`}));
         setFarmerCredits(prev => [...prev, ...fullNewCredits]);
     }
+    
+    // ✅ CORRECTION: Créer un cycle de cultivation pour CHAQUE module
+    const newCycles: CultivationCycle[] = operationData.moduleCuts.map(moduleCut => ({
+        id: `cycle-${Date.now()}-${Math.random()}`,
+        moduleId: moduleCut.moduleId,
+        seaweedTypeId: operationData.seaweedTypeId,
+        plantingDate: operationData.date, // Utiliser la date de l'opération par défaut
+        status: ModuleStatus.PLANTED,
+        initialWeight: 0,
+        cuttingOperationId: newOperation.id, // ✅ IMPORTANT: Lier le cycle à l'opération
+        linesPlanted: moduleCut.linesCut
+    }));
+    
+    setCultivationCycles(prev => [...prev, ...newCycles]);
+    
+    console.log('✅ Created cutting operation:', newOperation.id);
+    console.log('✅ Created', newCycles.length, 'cultivation cycles');
   };
 
   const updateCuttingOperation = (updatedOperation: CuttingOperation, plantingDate?: string) => {
