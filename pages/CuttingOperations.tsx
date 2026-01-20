@@ -6,7 +6,7 @@ import { useSettings } from '../contexts/SettingsContext';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Icon from '../components/ui/Icon';
-import ConfirmationModal from '../components/ui/ConfirmationModal';
+import CascadeDeleteConfirmationModal from '../components/CascadeDeleteConfirmationModal';
 import CuttingOperationFormModal from '../components/CuttingOperationFormModal';
 import PlantingFormModal from '../components/PlantingFormModal';
 import { formatCurrency } from '../utils/formatters';
@@ -17,12 +17,12 @@ type SortableKeys = keyof CuttingOperation | 'siteName' | 'providerName';
 const CuttingOperations: React.FC = () => {
     const { t } = useLocalization();
     const { settings } = useSettings();
-    const { cuttingOperations, sites, serviceProviders, modules, farmers, deleteCuttingOperation } = useData();
+    const { cuttingOperations, sites, serviceProviders, modules, farmers, deleteCuttingOperation, getCyclesByCuttingOperationId } = useData();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [editingOperation, setEditingOperation] = useState<CuttingOperation | null>(null);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-    const [operationToDelete, setOperationToDelete] = useState<string | null>(null);
+    const [operationToDelete, setOperationToDelete] = useState<CuttingOperation | null>(null);
     const [sortConfig, setSortConfig] = useState<{ key: SortableKeys; direction: 'ascending' | 'descending' }>({ key: 'date', direction: 'descending' });
 
 
@@ -101,18 +101,22 @@ const CuttingOperations: React.FC = () => {
         setIsAddModalOpen(false);
     };
 
-    const handleDeleteClick = (operationId: string) => {
-        setOperationToDelete(operationId);
+    const handleDeleteClick = (operation: CuttingOperation) => {
+        setOperationToDelete(operation);
         setIsConfirmOpen(true);
     };
 
     const handleConfirmDelete = () => {
         if (operationToDelete) {
-            deleteCuttingOperation(operationToDelete);
+            deleteCuttingOperation(operationToDelete.id);
         }
         setIsConfirmOpen(false);
         setOperationToDelete(null);
     };
+    
+    const relatedCycles = useMemo(() => {
+        return operationToDelete ? getCyclesByCuttingOperationId(operationToDelete.id) : [];
+    }, [operationToDelete, getCyclesByCuttingOperationId]);
 
     return (
         <div>
@@ -206,7 +210,7 @@ const CuttingOperations: React.FC = () => {
                                         <td className="p-3">
                                             <div className="flex justify-end gap-2">
                                                 <Button variant="ghost" onClick={() => handleOpenEditModal(op)}><Icon name="Settings" className="w-4 h-4" />{t('edit')}</Button>
-                                                <Button variant="danger" onClick={() => handleDeleteClick(op.id)}><Icon name="Trash2" className="w-4 h-4" />{t('delete')}</Button>
+                                                <Button variant="danger" onClick={() => handleDeleteClick(op)}><Icon name="Trash2" className="w-4 h-4" />{t('delete')}</Button>
                                             </div>
                                         </td>
                                     </tr>
@@ -220,7 +224,13 @@ const CuttingOperations: React.FC = () => {
             {isAddModalOpen && <PlantingFormModal isOpen={isAddModalOpen} onClose={handleCloseModal} />}
             {isEditModalOpen && <CuttingOperationFormModal isOpen={isEditModalOpen} onClose={handleCloseModal} operation={editingOperation} />}
             
-            {isConfirmOpen && <ConfirmationModal isOpen={isConfirmOpen} onClose={() => setIsConfirmOpen(false)} onConfirm={handleConfirmDelete} title={t('confirmDeleteTitle')} message={t('confirmDeleteCuttingOperation')} />}
+            <CascadeDeleteConfirmationModal 
+                isOpen={isConfirmOpen} 
+                onClose={() => setIsConfirmOpen(false)} 
+                onConfirm={handleConfirmDelete} 
+                operation={operationToDelete}
+                relatedCycles={relatedCycles}
+            />
         </div>
     );
 };

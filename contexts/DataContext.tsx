@@ -170,6 +170,7 @@ interface DataContextType {
   updateCultivationCycle: (cycleData: CultivationCycle) => void;
   updateMultipleCultivationCycles: (cycles: CultivationCycle[]) => void;
   deleteCultivationCycle: (cycleId: string) => void;
+  getCyclesByCuttingOperationId: (operationId: string) => CultivationCycle[];
   startCultivationFromCuttings: (cuttingData: Omit<CuttingOperation, 'id'>, cycleData: Omit<CultivationCycle, 'id'>, beneficiaryFarmerId: string) => void;
   stockMovements: StockMovement[];
   addStockMovement: (movement: Omit<StockMovement, 'id'>) => void;
@@ -680,6 +681,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const deleteCultivationCycle = (cycleId: string) => {
     setCultivationCycles(prev => prev.filter(c => c.id !== cycleId));
+  };
+  
+  // Helper function to get cycles related to a cutting operation
+  const getCyclesByCuttingOperationId = (operationId: string): CultivationCycle[] => {
+    return cultivationCycles.filter(cycle => cycle.cuttingOperationId === operationId);
   };
 
   const startCultivationFromCuttings = (
@@ -1225,8 +1231,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const deleteCuttingOperation = (operationId: string) => {
+      // Supprimer l'opération de coupe
       setCuttingOperations(prev => prev.filter(op => op.id !== operationId));
+      
+      // Supprimer les crédits liés
       setFarmerCredits(prev => prev.filter(credit => credit.relatedOperationId !== operationId));
+      
+      // Supprimer tous les cycles de cultivation liés (CASCADE DELETE)
+      setCultivationCycles(prev => prev.filter(cycle => cycle.cuttingOperationId !== operationId));
   };
   
   const addIncident = (incident: Omit<Incident, 'id'>) => setIncidents(prev => [...prev, { ...incident, id: `inc-${Date.now()}` }]);
@@ -1485,7 +1497,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       monthlyPayments, addMonthlyPayment, addMultipleMonthlyPayments, updateMonthlyPayment, deleteMonthlyPayment, 
       seaweedTypes, addSeaweedType, updateSeaweedType, deleteSeaweedType, updateSeaweedPrices, 
       modules, cultivationCycles, addModule, updateModule, deleteModule, deleteMultipleModules, updateModulesFarmer, 
-      addCultivationCycle, updateCultivationCycle, updateMultipleCultivationCycles, deleteCultivationCycle, startCultivationFromCuttings, 
+      addCultivationCycle, updateCultivationCycle, updateMultipleCultivationCycles, deleteCultivationCycle, getCyclesByCuttingOperationId, startCultivationFromCuttings, 
       stockMovements, addStockMovement, addMultipleStockMovements, recordReturnFromPressing, 
       farmerDeliveries, addFarmerDelivery, deleteFarmerDelivery, 
       addInitialStock, transferBaggedToStock, exportStockBatch, 
