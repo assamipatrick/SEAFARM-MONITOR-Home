@@ -1236,51 +1236,61 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Utiliser plantingDate fournie ou la date de l'opération comme défaut
         const effectivePlantingDate = plantingDate || updatedOperation.date;
         
-        setCultivationCycles(prev => prev.map(cycle => {
-          if (cycle.cuttingOperationId === updatedOperation.id) {
-            // Trouver le moduleCut correspondant pour ce cycle
-            const moduleCut = updatedOperation.moduleCuts.find(mc => mc.moduleId === cycle.moduleId);
-            
-            if (!moduleCut) {
-              // Si le module n'est plus dans les moduleCuts, supprimer le cycle
-              return null as any; // Sera filtré plus tard
-            }
-            
-            // Mettre à jour les propriétés du cycle
-            return {
-              ...cycle,
-              seaweedTypeId: updatedOperation.seaweedTypeId,
-              linesPlanted: moduleCut.linesCut,
-              plantingDate: effectivePlantingDate, // Mettre à jour la plantingDate
-              // initialWeight pourrait aussi être mis à jour selon la logique métier
-            };
-          }
-          return cycle;
-        }).filter(Boolean)); // Filtrer les cycles null (supprimés)
-        
-        // Créer de nouveaux cycles pour les modules ajoutés
-        const existingModuleIds = cultivationCycles
-          .filter(cycle => cycle.cuttingOperationId === updatedOperation.id)
-          .map(cycle => cycle.moduleId);
-        
-        const newModuleCuts = updatedOperation.moduleCuts.filter(
-          mc => !existingModuleIds.includes(mc.moduleId)
+        // Identifier les cycles existants pour cette opération
+        const existingCycles = cultivationCycles.filter(
+            cycle => cycle.cuttingOperationId === updatedOperation.id
         );
+        const existingModuleIds = existingCycles.map(cycle => cycle.moduleId);
         
-        if (newModuleCuts.length > 0) {
-          const newCycles: CultivationCycle[] = newModuleCuts.map(mc => ({
-            id: `cycle-${Date.now()}-${Math.random()}`,
-            moduleId: mc.moduleId,
-            seaweedTypeId: updatedOperation.seaweedTypeId,
-            plantingDate: effectivePlantingDate, // Utiliser la plantingDate fournie
-            status: ModuleStatus.PLANTED,
-            initialWeight: 0, // À définir selon la logique métier
-            cuttingOperationId: updatedOperation.id,
-            linesPlanted: mc.linesCut
-          }));
-          
-          setCultivationCycles(prev => [...prev, ...newCycles]);
-        }
+        // Identifier les modules à ajouter (nouveaux) et à supprimer (retirés)
+        const updatedModuleIds = updatedOperation.moduleCuts.map(mc => mc.moduleId);
+        const modulesToAdd = updatedModuleIds.filter(id => !existingModuleIds.includes(id));
+        const modulesToRemove = existingModuleIds.filter(id => !updatedModuleIds.includes(id));
+        
+        // Mettre à jour les cycles existants
+        setCultivationCycles(prev => {
+            // Filtrer les cycles à supprimer
+            let updatedCycles = prev.filter(cycle => {
+                if (cycle.cuttingOperationId === updatedOperation.id) {
+                    // Garder seulement si le module est toujours dans moduleCuts
+                    return !modulesToRemove.includes(cycle.moduleId);
+                }
+                return true; // Garder tous les autres cycles
+            });
+            
+            // Mettre à jour les cycles conservés
+            updatedCycles = updatedCycles.map(cycle => {
+                if (cycle.cuttingOperationId === updatedOperation.id) {
+                    const moduleCut = updatedOperation.moduleCuts.find(mc => mc.moduleId === cycle.moduleId);
+                    if (moduleCut) {
+                        return {
+                            ...cycle,
+                            seaweedTypeId: updatedOperation.seaweedTypeId,
+                            linesPlanted: moduleCut.linesCut,
+                            plantingDate: effectivePlantingDate,
+                        };
+                    }
+                }
+                return cycle;
+            });
+            
+            // Ajouter les nouveaux cycles pour les modules ajoutés
+            const newCycles: CultivationCycle[] = modulesToAdd.map(moduleId => {
+                const moduleCut = updatedOperation.moduleCuts.find(mc => mc.moduleId === moduleId);
+                return {
+                    id: `cycle-${Date.now()}-${Math.random()}`,
+                    moduleId: moduleId,
+                    seaweedTypeId: updatedOperation.seaweedTypeId,
+                    plantingDate: effectivePlantingDate,
+                    status: ModuleStatus.PLANTED,
+                    initialWeight: 0,
+                    cuttingOperationId: updatedOperation.id,
+                    linesPlanted: moduleCut?.linesCut || 0
+                };
+            });
+            
+            return [...updatedCycles, ...newCycles];
+        });
       }
   };
 
@@ -1294,11 +1304,19 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const deleteCuttingOperation = (operationId: string) => {
       // Trouver l'opération avant de la supprimer
       const operation = cuttingOperations.find(op => op.id === operationId);
-      if (!operation) return;
+      if (!operation) {
+          console.log('❌ Operation not found:', operationId);
+          return;
+      }
+      
+      console.log('🔍 Deleting operation:', operationId);
       
       // Trouver tous les cycles liés à cette opération
       const relatedCycles = cultivationCycles.filter(cycle => cycle.cuttingOperationId === operationId);
       const affectedModuleIds = relatedCycles.map(cycle => cycle.moduleId);
+      
+      console.log('📊 Related cycles:', relatedCycles.length);
+      console.log('📦 Affected modules:', affectedModuleIds);
       
       // Pour chaque module affecté, vérifier s'il aura encore des cycles après suppression
       const modulesToFree: string[] = [];
@@ -1308,11 +1326,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
               cycle => cycle.moduleId === moduleId && cycle.cuttingOperationId !== operationId
           );
           
+          console.log(`🔍 Module ${moduleId}: ${remainingCycles.length} remaining cycles`);
+          
           // Si aucun cycle ne restera, marquer le module pour libération
           if (remainingCycles.length === 0) {
               modulesToFree.push(moduleId);
+              console.log(`✅ Module ${moduleId} marked for liberation`);
           }
       });
+      
+      console.log('🆓 Modules to free:', modulesToFree);
       
       // Supprimer l'opération de coupe
       setCuttingOperations(prev => prev.filter(op => op.id !== operationId));
@@ -1325,8 +1348,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Libérer les modules qui n'ont plus de cycles
       if (modulesToFree.length > 0) {
+          console.log('🔓 Freeing modules:', modulesToFree);
           setModules(prev => prev.map(module => {
               if (modulesToFree.includes(module.id)) {
+                  console.log(`✅ Freeing module ${module.id} (${module.code})`);
                   return {
                       ...module,
                       farmerId: undefined, // Retirer le fermier
@@ -1342,6 +1367,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
               }
               return module;
           }));
+      } else {
+          console.log('ℹ️ No modules to free');
       }
   };
   
