@@ -21,6 +21,7 @@ const CuttingOperationFormModal: React.FC<CuttingOperationFormModalProps> = ({ i
 
     const [formData, setFormData] = useState({
         date: new Date().toISOString().split('T')[0],
+        plantingDate: new Date().toISOString().split('T')[0], // Date de plantation des nouveaux cycles
         siteId: sites[0]?.id || '',
         serviceProviderId: serviceProviders[0]?.id || '',
         moduleCuts: [] as { moduleId: string, linesCut: number }[],
@@ -67,6 +68,7 @@ const CuttingOperationFormModal: React.FC<CuttingOperationFormModalProps> = ({ i
     const validate = useCallback(() => {
         const newErrors: Record<string, string> = {};
         if (!formData.date) newErrors.date = t('validationRequired');
+        if (!formData.plantingDate) newErrors.plantingDate = t('validationRequired');
         if (!formData.siteId) newErrors.siteId = t('validationRequired');
         if (!formData.serviceProviderId) newErrors.serviceProviderId = t('validationRequired');
         if (formData.moduleCuts.length === 0) newErrors.moduleCuts = t('validationSelectAtLeastOne');
@@ -78,13 +80,26 @@ const CuttingOperationFormModal: React.FC<CuttingOperationFormModalProps> = ({ i
             newErrors.paymentDate = t('validationRequired');
         }
         if (!formData.seaweedTypeId) newErrors.seaweedTypeId = t('validationRequired');
+        // Vérifier que la date de plantation n'est pas antérieure à la date de l'opération
+        if (formData.plantingDate && formData.date && formData.plantingDate < formData.date) {
+            newErrors.plantingDate = t('validationPlantingDateAfterCutting');
+        }
         return newErrors;
     }, [formData, t]);
 
     useEffect(() => {
         if (operation) {
+            // Trouver la date de plantation des cycles associés à cette opération
+            const relatedCycles = cultivationCycles.filter(cycle => 
+                cycle.cuttingOperationId === operation.id
+            );
+            const plantingDate = relatedCycles.length > 0 
+                ? relatedCycles[0].plantingDate 
+                : new Date().toISOString().split('T')[0];
+            
             setFormData({
                 date: operation.date,
+                plantingDate: plantingDate,
                 siteId: operation.siteId,
                 serviceProviderId: operation.serviceProviderId,
                 moduleCuts: operation.moduleCuts.map(mc => ({ moduleId: mc.moduleId, linesCut: mc.linesCut })),
@@ -95,7 +110,7 @@ const CuttingOperationFormModal: React.FC<CuttingOperationFormModalProps> = ({ i
                 seaweedTypeId: operation.seaweedTypeId,
             });
         }
-    }, [operation, isOpen]);
+    }, [operation, isOpen, cultivationCycles]);
 
     useEffect(() => {
         setErrors(validate());
@@ -167,6 +182,19 @@ const CuttingOperationFormModal: React.FC<CuttingOperationFormModalProps> = ({ i
         
         if (operation) {
             updateCuttingOperation({ ...operation, ...operationData });
+            
+            // Mettre à jour la date de plantation des cycles associés
+            const relatedCycles = cultivationCycles.filter(cycle => 
+                cycle.cuttingOperationId === operation.id
+            );
+            
+            if (relatedCycles.length > 0) {
+                const updatedCycles = relatedCycles.map(cycle => ({
+                    ...cycle,
+                    plantingDate: formData.plantingDate
+                }));
+                updateMultipleCultivationCycles(updatedCycles);
+            }
         } else {
             addCuttingOperation(operationData);
         }
@@ -178,8 +206,16 @@ const CuttingOperationFormModal: React.FC<CuttingOperationFormModalProps> = ({ i
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={operation ? t('editCuttingOperation') : t('addOperation')} widthClass="max-w-7xl">
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <Input label={t('date')} type="date" value={formData.date} onChange={e => handleChange('date', e.target.value)} error={errors.date} required />
+                    <Input 
+                        label={t('plantingDate')} 
+                        type="date" 
+                        value={formData.plantingDate} 
+                        onChange={e => handleChange('plantingDate', e.target.value)} 
+                        error={errors.plantingDate} 
+                        required 
+                    />
                     <Select label={t('site')} value={formData.siteId} onChange={e => handleSiteChange(e.target.value)} error={errors.siteId} required>
                         <option value="">{t('selectSite')}</option>
                         {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}

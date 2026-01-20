@@ -169,4 +169,5 @@ export const operationTranslations = {
   // Added keys
   pricePerLine: { en: 'Price per Line', fr: 'Prix par Ligne' },
   baggedWeightKg: { en: 'Bagged Weight (Kg)', fr: 'Poids Ensaché (Kg)' },
+  validationPlantingDateAfterCutting: { en: 'Planting date must be on or after the cutting date', fr: 'La date de plantation doit être égale ou postérieure à la date de coupe' },
 };
