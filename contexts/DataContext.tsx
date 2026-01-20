@@ -1300,6 +1300,20 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const relatedCycles = cultivationCycles.filter(cycle => cycle.cuttingOperationId === operationId);
       const affectedModuleIds = relatedCycles.map(cycle => cycle.moduleId);
       
+      // Pour chaque module affecté, vérifier s'il aura encore des cycles après suppression
+      const modulesToFree: string[] = [];
+      affectedModuleIds.forEach(moduleId => {
+          // Compter tous les cycles de ce module SAUF ceux de l'opération à supprimer
+          const remainingCycles = cultivationCycles.filter(
+              cycle => cycle.moduleId === moduleId && cycle.cuttingOperationId !== operationId
+          );
+          
+          // Si aucun cycle ne restera, marquer le module pour libération
+          if (remainingCycles.length === 0) {
+              modulesToFree.push(moduleId);
+          }
+      });
+      
       // Supprimer l'opération de coupe
       setCuttingOperations(prev => prev.filter(op => op.id !== operationId));
       
@@ -1309,16 +1323,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Supprimer tous les cycles de cultivation liés (CASCADE DELETE)
       setCultivationCycles(prev => prev.filter(cycle => cycle.cuttingOperationId !== operationId));
       
-      // Libérer les modules affectés
-      setModules(prev => prev.map(module => {
-          if (affectedModuleIds.includes(module.id)) {
-              // Vérifier s'il reste d'autres cycles actifs pour ce module
-              const remainingCycles = cultivationCycles.filter(
-                  cycle => cycle.moduleId === module.id && cycle.cuttingOperationId !== operationId
-              );
-              
-              // Si aucun cycle restant, libérer le module
-              if (remainingCycles.length === 0) {
+      // Libérer les modules qui n'ont plus de cycles
+      if (modulesToFree.length > 0) {
+          setModules(prev => prev.map(module => {
+              if (modulesToFree.includes(module.id)) {
                   return {
                       ...module,
                       farmerId: undefined, // Retirer le fermier
@@ -1332,9 +1340,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                       ]
                   };
               }
-          }
-          return module;
-      }));
+              return module;
+          }));
+      }
   };
   
   const addIncident = (incident: Omit<Incident, 'id'>) => setIncidents(prev => [...prev, { ...incident, id: `inc-${Date.now()}` }]);
