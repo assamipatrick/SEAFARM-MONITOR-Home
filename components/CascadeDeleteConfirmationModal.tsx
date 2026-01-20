@@ -131,9 +131,12 @@ const CascadeDeleteConfirmationModal: React.FC<CascadeDeleteConfirmationModalPro
     onClose();
   };
 
-  if (!operation || relatedCycles.length === 0) {
+  if (!operation) {
     return null;
   }
+  
+  // Si pas de cycles, suppression simple sans cascade
+  const isSimpleDelete = relatedCycles.length === 0;
 
   const currentStepData = confirmationSteps[currentStep];
   const progress = ((currentStep + 1) / confirmationSteps.length) * 100;
@@ -141,82 +144,100 @@ const CascadeDeleteConfirmationModal: React.FC<CascadeDeleteConfirmationModalPro
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={t('cascadeDeleteConfirmation')} widthClass="max-w-2xl">
       <div className="space-y-6">
-        {/* Progress Bar */}
-        <div className="relative pt-1">
-          <div className="flex mb-2 items-center justify-between">
-            <div>
-              <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
-                {t('step')} {currentStep + 1} / {confirmationSteps.length}
-              </span>
-            </div>
-            <div className="text-right">
-              <span className="text-xs font-semibold inline-block text-blue-600">
-                {Math.round(progress)}%
-              </span>
+        {/* Si suppression simple (pas de cycles), afficher un message simple */}
+        {isSimpleDelete ? (
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+            <div className="flex items-start gap-4">
+              <Icon name="AlertTriangle" className="w-12 h-12 flex-shrink-0 text-yellow-600" />
+              <div className="flex-1">
+                <h3 className="text-lg font-bold mb-2">{t('confirmDeleteCuttingOperation')}</h3>
+                <p className="text-gray-700 dark:text-gray-300">{t('confirmDeleteCuttingOperationMessage')}</p>
+                <p className="text-sm text-gray-500 mt-2">{t('noRelatedCycles')}</p>
+              </div>
             </div>
           </div>
-          <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
-            <div
-              style={{ width: `${progress}%` }}
-              className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500 transition-all duration-300"
-            />
-          </div>
-        </div>
+        ) : (
+          <>
+            {/* Progress Bar */}
+            <div className="relative pt-1">
+              <div className="flex mb-2 items-center justify-between">
+                <div>
+                  <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
+                    {t('step')} {currentStep + 1} / {confirmationSteps.length}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-semibold inline-block text-blue-600">
+                    {Math.round(progress)}%
+                  </span>
+                </div>
+              </div>
+              <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
+                <div
+                  style={{ width: `${progress}%` }}
+                  className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500 transition-all duration-300"
+                />
+              </div>
+            </div>
 
-        {/* Current Step Content */}
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-          <div className="flex items-start gap-4">
-            <Icon name={currentStepData.icon as any} className={`w-12 h-12 flex-shrink-0 ${currentStepData.color}`} />
-            <div className="flex-1">
-              <h3 className="text-lg font-bold mb-2">{currentStepData.title}</h3>
-              <p className="text-gray-700 dark:text-gray-300">{currentStepData.message}</p>
+            {/* Current Step Content */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+              <div className="flex items-start gap-4">
+                <Icon name={currentStepData.icon as any} className={`w-12 h-12 flex-shrink-0 ${currentStepData.color}`} />
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold mb-2">{currentStepData.title}</h3>
+                  <p className="text-gray-700 dark:text-gray-300">{currentStepData.message}</p>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        
+        {/* Impact Summary (seulement si cycles existent) */}
+        {!isSimpleDelete && (
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+            <h4 className="font-semibold mb-3 flex items-center gap-2">
+              <Icon name="Info" className="w-5 h-5 text-blue-600" />
+              {t('deletionImpactSummary')}
+            </h4>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="flex justify-between">
+                <span>{t('totalCycles')}:</span>
+                <span className="font-bold">{impactAnalysis.totalCycles}</span>
+              </div>
+              {impactAnalysis.harvested > 0 && (
+                <div className="flex justify-between">
+                  <span>{t('harvested')}:</span>
+                  <span className="font-bold text-orange-600">{impactAnalysis.harvested}</span>
+                </div>
+              )}
+              {impactAnalysis.dried > 0 && (
+                <div className="flex justify-between">
+                  <span>{t('dried')}:</span>
+                  <span className="font-bold text-orange-600">{impactAnalysis.dried}</span>
+                </div>
+              )}
+              {impactAnalysis.bagged > 0 && (
+                <div className="flex justify-between">
+                  <span>{t('bagged')}:</span>
+                  <span className="font-bold text-red-600">{impactAnalysis.bagged}</span>
+                </div>
+              )}
+              {impactAnalysis.inStock > 0 && (
+                <div className="flex justify-between">
+                  <span>{t('inStock')}:</span>
+                  <span className="font-bold text-red-600">{impactAnalysis.inStock}</span>
+                </div>
+              )}
+              {impactAnalysis.exported > 0 && (
+                <div className="flex justify-between">
+                  <span>{t('exported')}:</span>
+                  <span className="font-bold text-red-700">{impactAnalysis.exported}</span>
+                </div>
+              )}
             </div>
           </div>
-        </div>
-
-        {/* Impact Summary */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-          <h4 className="font-semibold mb-3 flex items-center gap-2">
-            <Icon name="Info" className="w-5 h-5 text-blue-600" />
-            {t('deletionImpactSummary')}
-          </h4>
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="flex justify-between">
-              <span>{t('totalCycles')}:</span>
-              <span className="font-bold">{impactAnalysis.totalCycles}</span>
-            </div>
-            {impactAnalysis.harvested > 0 && (
-              <div className="flex justify-between">
-                <span>{t('harvested')}:</span>
-                <span className="font-bold text-orange-600">{impactAnalysis.harvested}</span>
-              </div>
-            )}
-            {impactAnalysis.dried > 0 && (
-              <div className="flex justify-between">
-                <span>{t('dried')}:</span>
-                <span className="font-bold text-orange-600">{impactAnalysis.dried}</span>
-              </div>
-            )}
-            {impactAnalysis.bagged > 0 && (
-              <div className="flex justify-between">
-                <span>{t('bagged')}:</span>
-                <span className="font-bold text-red-600">{impactAnalysis.bagged}</span>
-              </div>
-            )}
-            {impactAnalysis.inStock > 0 && (
-              <div className="flex justify-between">
-                <span>{t('inStock')}:</span>
-                <span className="font-bold text-red-600">{impactAnalysis.inStock}</span>
-              </div>
-            )}
-            {impactAnalysis.exported > 0 && (
-              <div className="flex justify-between">
-                <span>{t('exported')}:</span>
-                <span className="font-bold text-red-700">{impactAnalysis.exported}</span>
-              </div>
-            )}
-          </div>
-        </div>
+        )}
 
         {/* Warning Message */}
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">

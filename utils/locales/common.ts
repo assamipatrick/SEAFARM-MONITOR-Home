@@ -108,6 +108,7 @@ export const commonTranslations = {
   notification_overdue: { en: 'Module {code}: Harvest overdue ({days} days)', fr: 'Module {code} : Récolte en retard ({days} jours)' },
   notification_nearing: { en: 'Module {code}: Harvest approaching ({days} days)', fr: 'Module {code} : Récolte approche ({days} jours)' },
   notification_unassigned: { en: 'Module {code}: Unassigned', fr: 'Module {code} : Non assigné' },
+  noRelatedCycles: { en: 'This operation has no related cultivation cycles.', fr: 'Cette opération n\'a pas de cycles de cultivation associés.' },
 
   // Dashboard specific
   analyticalDashboard: { en: 'Analytical Dashboard', fr: 'Tableau de bord analytique' },
