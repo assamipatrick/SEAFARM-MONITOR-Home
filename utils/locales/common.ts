@@ -105,6 +105,9 @@ export const commonTranslations = {
   notifications: { en: 'Notifications', fr: 'Notifications' },
   notifications_count: { en: '{count} notifications', fr: '{count} notifications' },
   noNotifications: { en: 'No new notifications', fr: 'Aucune nouvelle notification' },
+  notification_overdue: { en: 'Module {code}: Harvest overdue ({days} days)', fr: 'Module {code} : Récolte en retard ({days} jours)' },
+  notification_nearing: { en: 'Module {code}: Harvest approaching ({days} days)', fr: 'Module {code} : Récolte approche ({days} jours)' },
+  notification_unassigned: { en: 'Module {code}: Unassigned', fr: 'Module {code} : Non assigné' },
 
   // Dashboard specific
   analyticalDashboard: { en: 'Analytical Dashboard', fr: 'Tableau de bord analytique' },
