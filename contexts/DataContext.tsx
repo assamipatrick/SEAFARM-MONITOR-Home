@@ -1292,6 +1292,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const deleteCuttingOperation = (operationId: string) => {
+      // Trouver l'opération avant de la supprimer
+      const operation = cuttingOperations.find(op => op.id === operationId);
+      if (!operation) return;
+      
+      // Trouver tous les cycles liés à cette opération
+      const relatedCycles = cultivationCycles.filter(cycle => cycle.cuttingOperationId === operationId);
+      const affectedModuleIds = relatedCycles.map(cycle => cycle.moduleId);
+      
       // Supprimer l'opération de coupe
       setCuttingOperations(prev => prev.filter(op => op.id !== operationId));
       
@@ -1300,6 +1308,33 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Supprimer tous les cycles de cultivation liés (CASCADE DELETE)
       setCultivationCycles(prev => prev.filter(cycle => cycle.cuttingOperationId !== operationId));
+      
+      // Libérer les modules affectés
+      setModules(prev => prev.map(module => {
+          if (affectedModuleIds.includes(module.id)) {
+              // Vérifier s'il reste d'autres cycles actifs pour ce module
+              const remainingCycles = cultivationCycles.filter(
+                  cycle => cycle.moduleId === module.id && cycle.cuttingOperationId !== operationId
+              );
+              
+              // Si aucun cycle restant, libérer le module
+              if (remainingCycles.length === 0) {
+                  return {
+                      ...module,
+                      farmerId: undefined, // Retirer le fermier
+                      statusHistory: [
+                          ...module.statusHistory,
+                          {
+                              status: 'FREE' as HistoryStatus,
+                              date: new Date().toISOString().split('T')[0],
+                              notes: `Module libéré après suppression de l'opération de cutting ${operationId.substring(0, 8)}`
+                          }
+                      ]
+                  };
+              }
+          }
+          return module;
+      }));
   };
   
   const addIncident = (incident: Omit<Incident, 'id'>) => setIncidents(prev => [...prev, { ...incident, id: `inc-${Date.now()}` }]);
