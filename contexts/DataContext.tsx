@@ -206,7 +206,7 @@ interface DataContextType {
   updateSiteTransfer: (transfer: SiteTransfer) => void;
   cuttingOperations: CuttingOperation[];
   addCuttingOperation: (operationData: Omit<CuttingOperation, 'id'>) => void;
-  updateCuttingOperation: (operation: CuttingOperation) => void;
+  updateCuttingOperation: (operation: CuttingOperation, plantingDate?: string) => void;
   updateMultipleCuttingOperations: (operationIds: string[], paymentDate: string) => void;
   deleteCuttingOperation: (operationId: string) => void;
   incidents: Incident[];
@@ -1181,7 +1181,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const updateCuttingOperation = (updatedOperation: CuttingOperation) => {
+  const updateCuttingOperation = (updatedOperation: CuttingOperation, plantingDate?: string) => {
       const originalOperation = cuttingOperations.find(op => op.id === updatedOperation.id);
       if (!originalOperation) return;
 
@@ -1220,7 +1220,68 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setFarmerCredits([...otherCredits, ...fullNewCredits]);
       }
       
+      // Mettre à jour l'opération elle-même
       setCuttingOperations(prev => prev.map(op => op.id === updatedOperation.id ? updatedOperation : op));
+      
+      // CASCADE UPDATE: Mettre à jour les cycles de cultivation liés
+      // Vérifier si des champs impactant les cycles ont changé
+      const cycleImpactingFieldsChanged = 
+          originalOperation.seaweedTypeId !== updatedOperation.seaweedTypeId ||
+          originalOperation.siteId !== updatedOperation.siteId ||
+          originalOperation.unitPrice !== updatedOperation.unitPrice ||
+          JSON.stringify(originalOperation.moduleCuts) !== JSON.stringify(updatedOperation.moduleCuts) ||
+          plantingDate !== undefined; // Si plantingDate est fournie, toujours mettre à jour
+      
+      if (cycleImpactingFieldsChanged) {
+        // Utiliser plantingDate fournie ou la date de l'opération comme défaut
+        const effectivePlantingDate = plantingDate || updatedOperation.date;
+        
+        setCultivationCycles(prev => prev.map(cycle => {
+          if (cycle.cuttingOperationId === updatedOperation.id) {
+            // Trouver le moduleCut correspondant pour ce cycle
+            const moduleCut = updatedOperation.moduleCuts.find(mc => mc.moduleId === cycle.moduleId);
+            
+            if (!moduleCut) {
+              // Si le module n'est plus dans les moduleCuts, supprimer le cycle
+              return null as any; // Sera filtré plus tard
+            }
+            
+            // Mettre à jour les propriétés du cycle
+            return {
+              ...cycle,
+              seaweedTypeId: updatedOperation.seaweedTypeId,
+              linesPlanted: moduleCut.linesCut,
+              plantingDate: effectivePlantingDate, // Mettre à jour la plantingDate
+              // initialWeight pourrait aussi être mis à jour selon la logique métier
+            };
+          }
+          return cycle;
+        }).filter(Boolean)); // Filtrer les cycles null (supprimés)
+        
+        // Créer de nouveaux cycles pour les modules ajoutés
+        const existingModuleIds = cultivationCycles
+          .filter(cycle => cycle.cuttingOperationId === updatedOperation.id)
+          .map(cycle => cycle.moduleId);
+        
+        const newModuleCuts = updatedOperation.moduleCuts.filter(
+          mc => !existingModuleIds.includes(mc.moduleId)
+        );
+        
+        if (newModuleCuts.length > 0) {
+          const newCycles: CultivationCycle[] = newModuleCuts.map(mc => ({
+            id: `cycle-${Date.now()}-${Math.random()}`,
+            moduleId: mc.moduleId,
+            seaweedTypeId: updatedOperation.seaweedTypeId,
+            plantingDate: effectivePlantingDate, // Utiliser la plantingDate fournie
+            status: ModuleStatus.PLANTED,
+            initialWeight: 0, // À définir selon la logique métier
+            cuttingOperationId: updatedOperation.id,
+            linesPlanted: mc.linesCut
+          }));
+          
+          setCultivationCycles(prev => [...prev, ...newCycles]);
+        }
+      }
   };
 
   const updateMultipleCuttingOperations = (operationIds: string[], paymentDate: string) => {

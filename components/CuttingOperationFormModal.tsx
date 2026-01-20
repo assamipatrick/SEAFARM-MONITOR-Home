@@ -17,7 +17,7 @@ interface CuttingOperationFormModalProps {
 
 const CuttingOperationFormModal: React.FC<CuttingOperationFormModalProps> = ({ isOpen, onClose, operation }) => {
     const { t } = useLocalization();
-    const { sites, serviceProviders, modules, farmers, addCuttingOperation, updateCuttingOperation, seaweedTypes, cultivationCycles, updateMultipleCultivationCycles } = useData();
+    const { sites, serviceProviders, modules, farmers, addCuttingOperation, updateCuttingOperation, seaweedTypes, cultivationCycles } = useData();
 
     const [formData, setFormData] = useState({
         date: new Date().toISOString().split('T')[0],
@@ -181,20 +181,12 @@ const CuttingOperationFormModal: React.FC<CuttingOperationFormModalProps> = ({ i
         };
         
         if (operation) {
-            updateCuttingOperation({ ...operation, ...operationData });
-            
-            // Mettre à jour la date de plantation des cycles associés
-            const relatedCycles = cultivationCycles.filter(cycle => 
-                cycle.cuttingOperationId === operation.id
+            // Mettre à jour l'opération avec la plantingDate
+            // La mise à jour en cascade est automatiquement gérée par updateCuttingOperation
+            updateCuttingOperation(
+                { ...operation, ...operationData },
+                formData.plantingDate // Passer la plantingDate pour la cascade
             );
-            
-            if (relatedCycles.length > 0) {
-                const updatedCycles = relatedCycles.map(cycle => ({
-                    ...cycle,
-                    plantingDate: formData.plantingDate
-                }));
-                updateMultipleCultivationCycles(updatedCycles);
-            }
         } else {
             addCuttingOperation(operationData);
         }
