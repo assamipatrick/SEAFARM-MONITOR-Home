@@ -1310,13 +1310,24 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       console.log('🔍 Deleting operation:', operationId);
+      console.log('📋 Operation details:', operation);
       
       // Trouver tous les cycles liés à cette opération
       const relatedCycles = cultivationCycles.filter(cycle => cycle.cuttingOperationId === operationId);
       const affectedModuleIds = relatedCycles.map(cycle => cycle.moduleId);
       
+      console.log('📊 Total cycles in system:', cultivationCycles.length);
       console.log('📊 Related cycles:', relatedCycles.length);
+      console.log('📊 Related cycle details:', relatedCycles);
       console.log('📦 Affected modules:', affectedModuleIds);
+      
+      // DEBUG: Afficher tous les cycles pour comprendre le problème
+      console.log('🔍 ALL CYCLES:', cultivationCycles.map(c => ({
+          id: c.id.substring(0, 8),
+          moduleId: c.moduleId.substring(0, 8),
+          cuttingOpId: c.cuttingOperationId?.substring(0, 8) || 'NONE',
+          match: c.cuttingOperationId === operationId
+      })));
       
       // Pour chaque module affecté, vérifier s'il aura encore des cycles après suppression
       const modulesToFree: string[] = [];
@@ -1326,32 +1337,44 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
               cycle => cycle.moduleId === moduleId && cycle.cuttingOperationId !== operationId
           );
           
-          console.log(`🔍 Module ${moduleId}: ${remainingCycles.length} remaining cycles`);
+          console.log(`🔍 Module ${moduleId.substring(0, 8)}: ${remainingCycles.length} remaining cycles`);
           
           // Si aucun cycle ne restera, marquer le module pour libération
           if (remainingCycles.length === 0) {
               modulesToFree.push(moduleId);
-              console.log(`✅ Module ${moduleId} marked for liberation`);
+              console.log(`✅ Module ${moduleId.substring(0, 8)} marked for liberation`);
           }
       });
       
-      console.log('🆓 Modules to free:', modulesToFree);
+      console.log('🆓 Modules to free:', modulesToFree.map(id => id.substring(0, 8)));
       
       // Supprimer l'opération de coupe
-      setCuttingOperations(prev => prev.filter(op => op.id !== operationId));
+      setCuttingOperations(prev => {
+          const result = prev.filter(op => op.id !== operationId);
+          console.log('✅ Operations after delete:', result.length);
+          return result;
+      });
       
       // Supprimer les crédits liés
       setFarmerCredits(prev => prev.filter(credit => credit.relatedOperationId !== operationId));
       
       // Supprimer tous les cycles de cultivation liés (CASCADE DELETE)
-      setCultivationCycles(prev => prev.filter(cycle => cycle.cuttingOperationId !== operationId));
+      setCultivationCycles(prev => {
+          const result = prev.filter(cycle => cycle.cuttingOperationId !== operationId);
+          console.log('✅ Cycles after delete:', result.length, '(was', prev.length, ')');
+          console.log('✅ Remaining cycles:', result.map(c => ({
+              id: c.id.substring(0, 8),
+              cuttingOpId: c.cuttingOperationId?.substring(0, 8) || 'NONE'
+          })));
+          return result;
+      });
       
       // Libérer les modules qui n'ont plus de cycles
       if (modulesToFree.length > 0) {
-          console.log('🔓 Freeing modules:', modulesToFree);
+          console.log('🔓 Freeing modules:', modulesToFree.map(id => id.substring(0, 8)));
           setModules(prev => prev.map(module => {
               if (modulesToFree.includes(module.id)) {
-                  console.log(`✅ Freeing module ${module.id} (${module.code})`);
+                  console.log(`✅ Freeing module ${module.id.substring(0, 8)} (${module.code})`);
                   return {
                       ...module,
                       farmerId: undefined, // Retirer le fermier
@@ -1370,6 +1393,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
           console.log('ℹ️ No modules to free');
       }
+      
+      console.log('✅ DELETE COMPLETE');
   };
   
   const addIncident = (incident: Omit<Incident, 'id'>) => setIncidents(prev => [...prev, { ...incident, id: `inc-${Date.now()}` }]);
