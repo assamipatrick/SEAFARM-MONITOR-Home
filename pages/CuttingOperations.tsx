@@ -9,6 +9,7 @@ import Icon from '../components/ui/Icon';
 import CascadeDeleteConfirmationModal from '../components/CascadeDeleteConfirmationModal';
 import CuttingOperationFormModal from '../components/CuttingOperationFormModal';
 import PlantingFormModal from '../components/PlantingFormModal';
+import DebugPanel from '../components/DebugPanel';
 import { formatCurrency } from '../utils/formatters';
 import type { CuttingOperation } from '../types';
 
@@ -231,6 +232,8 @@ const CuttingOperations: React.FC = () => {
                 operation={operationToDelete}
                 relatedCycles={relatedCycles}
             />
+            
+            <DebugPanel />
         </div>
     );
 };
